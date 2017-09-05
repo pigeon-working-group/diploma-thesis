@@ -1,0 +1,69 @@
+\documentclass[english,oneside,color]{htldipl}
+
+\graphicspath{{images/}} 
+\usepackage[margin=3cm]{geometry} % 3cm border
+
+\makeglossaries
+\loadglsentries{text/glossary}
+
+\begin{document}
+
+
+\title{Pigeon 9000}
+\abteilung{Informatik}
+\schwerpunkt{Rocket science} % TODO: More serious
+\studienort{Wiener Neustadt}
+\schule{HTBLuVA Wiener Neustadt}
+\schullogo{htl.jpeg}
+\abgabejahr{2017/18}
+
+\betreuerA{MMag.\ Dr.\ Michael Stifter}
+\betreuerB{}
+\betreuerC{}
+
+\schuelerA{Sebastian Schaffler}
+\evidenzA{5CHIF-18}
+\subthemaA{Construction} % TODO: More percise
+
+\schuelerB{Philip TRAUNER}
+\evidenzB{5CHIF-21}
+\subthemaB{Programming} % TODO: More percise
+
+\schuelerC{}
+\evidenzC{}
+\subthemaC{}
+
+\schuelerD{}
+\evidenzD{}
+\subthemaD{}
+
+\schuelerE{}
+\evidenzE{}
+\subthemaE{}
+
+
+\frontmatter
+\maketitle
+\tableofcontents
+
+\include{text/preamble}
+\include{text/summary}		
+\include{text/abstract}		
+
+\mainmatter
+
+\include{text/introduction}
+\include{text/end}
+
+\appendix
+\printglossaries
+
+\clearpage
+\addcontentsline{toc}{chapter}{\bibname}
+
+\bibliographystyle{bababbrv} 
+\bibliography{text/references}
+
+\include{text/messbox}
+
+\end{document}
