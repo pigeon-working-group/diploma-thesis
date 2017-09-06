@@ -234,7 +234,7 @@ der HTL Wiener Neustadt]
     	\> \@betreuerB \\ 
     	\> \@betreuerC \\ 
     \end{tabbing}
-    {\large \@studienort, am \today}%
+    {\large \@studienort, am \germandateformat\today}%
   \par\vfil\null
 \end{titlepage}%
 }
@@ -270,7 +270,7 @@ Quellen und Hilfsmittel nicht benutzt und die den benutzten Quellen wörtlich un
 
 \vspace{10mm}
 \noindent
-\@studienort, am \today
+\@studienort, am \germandateformat\today
 
 \vspace{12mm}
 \noindent
