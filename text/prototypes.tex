@@ -3,11 +3,11 @@
 \section{Pigeon 9000}
 
 \subsection{Concept}
-The first prototype's name is alluding to Falcon 9 by SpaceX, the only reusable orbital class rocket with a propulsively landing booster currently available. 
+The first prototype's name is alluding to Falcon 9 \cite{falcon9} by SpaceX \cite{spacex}, the only reusable orbital class rocket with a propulsively landing booster currently available. 
 
 The cheapest method to model a propulsion system was determined to be the usage of compressed air. 
 
-To circumvent the implications of the Tsiolkovsky rocket equation it was decided against mounting a compressed air canister onto the actual rocket corpus and instead separating the air source and the model.
+To circumvent the implications of the Tsiolkovsky rocket equation \cite{rocket-equation} it was decided against mounting a compressed air canister onto the actual rocket corpus and instead separating the air source and the model.
  
 % Explain effects of the Tsiolkovsky rocket equation
 
@@ -25,11 +25,11 @@ The focus of this first prototype was gaining experience handling thrust generat
 
    
 \subsection{Implementation}
-In the first meeting the most expensive and important part was acquired, a digitally controllable valve by Festo capable of handling pressures of up to 8bar. Additionally options for a linear guide and the rocket corpus were discussed. Using a table and utilizing it's legs as the guide and a PE pipe as the corpus was deemed the most practical approach. 
+In the first meeting the most expensive and important part was acquired, a digitally controllable valve by Festo \cite{festo-valve} capable of handling pressures of up to 8bar. Additionally options for a linear guide and the rocket corpus were discussed. Using a table and utilizing it's legs as the guide and a PE pipe as the corpus was deemed the most practical approach. 
 
 % Product details of Festo valve
 
-Table leg diameters were gathered by browsing the table section of a large furniture store to compare to PE pipes available in nearby hardware stores. When suitable guides and corpora were found they were compared until a 37cm high side table with a leg diameter of 25mm and a pipe with 27mm inner diameter were picked. Additionally a special plastic glue, intended to be used to attach the pressure tubes to the rocket body, was purchased, even though the exact type of pressure tube that was going to be used was still unknown.
+Table leg diameters were gathered by browsing the table section of a large furniture store to compare to PE pipes available in nearby hardware stores. When suitable guides and corpora were found they were compared until a 37cm high side table \cite{table} with a leg diameter of 25mm and a pipe with 27mm inner diameter were picked. Additionally a special plastic glue, intended to be used to attach the pressure tubes to the rocket body, was purchased, even though the exact type of pressure tube that was going to be used was still unknown.
 
 After the essential parts were gathered construction work began. A 5cm segment of the pipe was cut off to form the demonstrator corpus.
 
@@ -59,13 +59,9 @@ After receiving a PU pressure tube with 6mm outer diameter and 4mm inner diamete
 \caption{PE pipe used as rocket corpus. Duct tape is utilized to attach two PU tubes to either side of the body.}
 \end{figure}
 
-Consulting the documentation of the Festo valve revealed the need for a 24V power source. At this point in time it was still planned to power the whole prototype off battery power, for the sake of portability. The lack of cheap and long-lasting batteries that could be combined to provide 24V led to the conclusion, that a power supply was necessary. This resulted in an online purchase of a laptop charger with the appropriate voltage from a common online retailer.
+Consulting the documentation of the Festo valve revealed the need for a 24V power source. At this point in time it was still planned to power the whole prototype off battery power, for the sake of portability. The lack of cheap and long-lasting batteries that could be combined to provide 24V led to the conclusion, that a power supply was necessary. This resulted in an online purchase of a laptop charger \cite{power-supply} with the appropriate voltage from a common online retailer.
 
-% Exact make of power supply
-
-Connecting the PU tube to the Festo valve proved difficult because 4mm inner diameter is not an off-the-shelf size but instead used in industrial applications, therefor visits of every nearby hardware store with the intention of finding fitting connector parts were unsuccessful. Instead of ordering proper parts in a specialized online store, the decision was made to buy parts that were not intended for the tube diameter because long delivery times would have delayed the assembly by about a week. A crimp fitting with 6mm inner diameter, 8mm-15mm regular hose clamps and 7mm-13mm o-clip hose clamps were purchased. 
-
-% Exact clamp measurements
+Connecting the PU tube to the Festo valve proved difficult because 4mm inner diameter is not an off-the-shelf size but instead used in industrial applications, therefor visits of every nearby hardware store with the intention of finding fitting connector parts were unsuccessful. Instead of ordering proper parts in a specialized online store, the decision was made to buy parts that were not intended for the tube diameter because long delivery times would have delayed the assembly by about a week. A crimp fitting with 6mm inner diameter, 10mm-16mm regular hose clamps and 11mm-13mm o-clip hose clamps were purchased. 
 
 Connecting the crimp fitting to the pressure tube was successful with the help of a bunsen burner and a high amount of force. Electrical tape was wrapped around the tube to increase it's diameter in an effort to enable the clamps to fit.
 
@@ -93,9 +89,47 @@ The delivered T-shaped crimp fitting finally enabled a successful connection bet
 \caption{Festo valve with proper power connection. The T-shaped crimp fitting connects the valve to the pressure tubes that are attached to the corpus. The o-clip hose clamps provide additional protection against pressure loss. The compressor connector is attached to the valve via a 1/4inch to 1/8inch threaded adapter.}
 \end{figure}
 
+\newpage
+
+With most mechanical components in-place the attention was shifted to the electronic parts necessary, starting with a breadboard which was salvaged from an educational experimentation kit. 
+
+To control the electronic valve with a microcomputer later on, it was plugged into the normal close port of a relay which allows for programmatic switching of 24V power. 
+
+A Raspberry Pi 3 Model B \cite{raspberry-pi} was chosen as the development board because it enables high and low level programming with short iteration cycles thanks to a full-fledged underlying operating system \cite{raspbian} with networking capabilities. Direct memory access to the GPIO ports is well documented, I2C and SPI are supported with kernel command line flags and example code for most sensors is available on the internet. Additionally, a Raspberry Pi did not have to be acquired because one was already available.
+
+An Arduino was decided against mainly because of the slower and less convenient development experience and the current lack of Rust \cite{rust} support, which is planned to be used as the projects low level language.
+
+\begin{figure}[hp]
+\centering
+
+\includegraphics[width=135mm]{gobnik_science}
+
+\caption{First experiment to test out programmatic control of Festo valve with a Raspberry Pi 3 Model B and a relay.}
+\end{figure}
+
+Before mounting the components onto the table they were tested individually. Once the functionality of each part was validated a demo application was written in Rust to assess their combined functionality by switching the relay on and off. An audible click originated from the valve which gave the impression of a full switch operation happening inside the component.
+
+All components were mounted onto the top of the table in addition to a distributor socket with the purpose of simplifying power delivery.
+
+\newpage
+
+\begin{figure}[hp]
+\centering
+
+\includegraphics[width=100mm]{sketch_04_topview}
+
+\caption{Table construction from the top.}
+\end{figure}
+
+\begin{figure}[hp]
+\centering
+
+\includegraphics[height=100mm]{sketch_05_sideview}
+
+\caption{Table construction from the side.}
+\end{figure}
 
 \subsection{Manual control}
-
 
 \subsection{Basic software control}
 
