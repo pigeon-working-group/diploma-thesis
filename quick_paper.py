@@ -31,4 +31,4 @@ if IMAGEMAGICK_INSTALLED:
 	open(QUICK_PAPER, "w").write(out)
 
 else:
-	stderr.write("ImageMagick not installed, can't resize.", file=stderr)
+	print("ImageMagick not installed, can't resize.")
