@@ -1,3 +1,6 @@
 *.pdfsync
 *.ist
 .DS_Store
+images_resized
+quick_paper.pdf
+*.sublime-workspace
