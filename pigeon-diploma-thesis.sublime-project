@@ -1,0 +1,23 @@
+{
+	"build_systems": [
+		{
+			"name": "Make",
+			"shell_cmd": "make",
+			"variants": [
+				{
+					"name": "Quick",
+					"shell_cmd": "make quick"
+				}
+			],
+			"working_dir": "${project_path}"
+		}
+	],
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"tab_size": 4
+	}
+}
