@@ -19,7 +19,7 @@ if IMAGEMAGICK_INSTALLED:
 		if not isfile("{}/{}".format(RESIZED_IMAGES_LOCATION, image)):
 			# Not patient enough to convert command to list
 			if image.lower().endswith((".jpeg", ".png", ".jpg")):
-				check_call("mogrify -quality 50 -resize 50% -path {} {}/{}".format(
+				check_call("mogrify -quality 20 -resize 30% -path {} {}/{}".format(
 					RESIZED_IMAGES_LOCATION, IMAGES_LOCATION, image), shell=True)
 
 	for line in open(PAPER, "r"):
