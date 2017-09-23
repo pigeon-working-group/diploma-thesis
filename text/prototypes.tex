@@ -108,7 +108,7 @@ A Raspberry Pi 3 Model B \cite{raspberry-pi} was chosen as the development board
 
 An Arduino was decided against mainly because of the slower and less convenient development experience and the current lack of Rust \cite{rust} support, which is planned to be used as the projects low level language.
 
-Before mounting the components onto the table they were tested individually. Once the functionality of each part was validated a demo application was written in Rust to assess their combined functionality by switching the relay on and off after approximately 30ms. In the first dry run without a compressed air supply the valve emitted an audible click which gave the impression of a full switch operation happening inside the component.
+Before mounting the components onto the table they were tested individually. Once the functionality of each part was validated a demo application was written to assess their combined functionality by switching the relay on and off after approximately 30ms. In the first dry run without a compressed air supply the valve emitted an audible click which gave the impression of a full switch operation happening inside the component.
 
 \subsubsection{Finalizing assembly}
 After these tests where conducted all components were mounted onto the top of the table in addition to a distributor socket with the purpose of simplifying power delivery.
@@ -132,10 +132,11 @@ After some investigation it was discovered that the length of the dangling tubes
 \begin{figure}[h]
 \centering
 
-\includegraphics[height=95mm]{sketch_05_sideview}
+\includegraphics[width=165mm]{sketch_05_side_and_topview}
 
 \caption{Table construction from the side.}
 \end{figure}
+
 
 \subsection{Manual control}
 With the installation of all components completed, a first test run with the intention of verifying the behavior of the valve under real conditions was conducted, this time with an electrical compressor connected to it. Instead of controlling it with a computer program, the power cable was manually plugged into the breadboard for short periods of time, with the expectation of successful on/off switches of the valve, however that was not the case. Instead air was flowing through even though the valve was supposed to be in a closed state. 
@@ -146,10 +147,20 @@ It was discovered that the compressed air tube coupler contains a cut-off mechan
 
 
 \subsection{Basic software control}
-% basic rust ding 30ms 20ms
+NASA's Jet Propulsion Laboratory has published a rigorous rule set regarding programming conventions of mission critical code. These rules primarily apply to code written in the C programming language and specifically address memory safety issues regarding shared data and resource ownership, that can result in indeterministic behavior as well as unforeseen consequences. 
+
+These concerns are also relevant in the information security community, which led to the creation of compiler languages that can guarantee additional safety at compile time. 
+
+Rust is one of these languages and was chosen as the foundation of core software parts for which reliability and stability is key. Additionally the restrictions it imposes on the programmer are very similar to the conventions set up by the NASA Jet Propulsion Laboratory.
 
 \subsubsection{Architecture}
-% daemon + unix sockets
+% important for us rackete wärend flug mit korrekturen zu versorgen, den state der rakete zu altern
+
+The system architecture was inspired by the Mission Control like facilities, because of their ability to correct the state of the rocket during flight by communicating with core components over predefined protocols.
+% consist of daemon
+% state changes are sent to daemon over unix sockets
+% library in python to do so
+% instead of directly sending ms a cycle time and ratio are provided
 
 \subsection{Basic physical user interface}
 % button
