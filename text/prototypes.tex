@@ -151,14 +151,28 @@ NASA's Jet Propulsion Laboratory has published a rigorous rule set regarding pro
 
 These concerns are also relevant in the information security community, which led to the creation of compiler languages that can guarantee additional safety at compile time. 
 
-Rust is one of these languages and was chosen as the foundation of core software parts for which reliability and stability is key. Additionally the restrictions it imposes on the programmer are very similar to the conventions set up by the NASA Jet Propulsion Laboratory.
+Rust is one of these languages and was chosen as the foundation of core software components for which reliability and stability is key. Additionally the restrictions it imposes on the programmer are very similar to the conventions set up by the NASA Jet Propulsion Laboratory.
 
 \subsubsection{Architecture}
-% important for us rackete wärend flug mit korrekturen zu versorgen, den state der rakete zu altern
+Mission Control like facilities have the ability to correct the state of a rocket during flight by communicating with core components over predefined protocols. To allow for fast experimentation it was determined that this approach would be adopted for the first prototype.
 
-The system architecture was inspired by the Mission Control like facilities, because of their ability to correct the state of the rocket during flight by communicating with core components over predefined protocols.
-% consist of daemon
-% state changes are sent to daemon over unix sockets
+A client/server architecture, networked over the Transmission Control Protocol, was chosen to accomplish this design goal because the hardware setup guarantees that a stable Ethernet connection is present at all times. Additionally, client software can also be executed on the same microcomputer that the server is running on.
+
+The server is modeled after the Unix daemon concept and is therefor named pigeond. It is implemented in Rust. The client is referred to as controller and can be written in any programming language that supports sockets, however Python is used exclusively because it's robust standard library allows for quick iteration and experimentation.
+
+\begin{figure}[h]
+\centering
+
+\includegraphics[width=80mm]{controller_pushes_state_to_pigeond}
+
+\caption{A controller transmitting a state to the daemon. A state contains all necessary instructions for operation.}
+\end{figure}
+
+A state is a bundle of all necessary instructions required for operation. It is 
+
+% protokoll: tcp über das json verschickt wird
+
+
 % library in python to do so
 % instead of directly sending ms a cycle time and ratio are provided
 
@@ -187,7 +201,7 @@ The system architecture was inspired by the Mission Control like facilities, bec
 
 \includegraphics[width=165mm]{sketch_xx_second_concept}
 
-\caption{COncept}
+\caption{Concept}
 \end{figure}
 
 \subsection{Implementation}
