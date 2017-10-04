@@ -178,26 +178,9 @@ rust-sysfs-gpio  & sysfs                  & Yes                 & Yes
 
 sysfs is a pseudo Linux file system that provides information about kernel subsystems, hardware devices, and device drivers in addition to the ability to configure them. It lives in userspace and can not be relied upon if timing of operations is required to be deterministic. 
 
-rust-sysfs-gpio was selected as the GPIO library because of it's widespread usage, it's detailed documentation and a high commit frequency addressing issues reported by users. The access method was not deemed relevant at this point in time because the fact that sysfs operation timings are not deterministic was not obtained until first experiments were conducted. While timing was not an issue during these tests, the decision was made to switch to a direct memory access solution because of concerns regarding future situations in which precise operation would be required. 
+rust-sysfs-gpio \cite{rust-sysfs-gpio} was selected as the GPIO library because of it's widespread usage, it's detailed documentation and a high commit frequency addressing issues reported by users. The access method was not deemed relevant at this point in time because the fact that sysfs operation timings are not deterministic was not known until first experiments were conducted. While timing was not an issue during these tests, the decision was made to switch to a direct memory access solution because of concerns regarding future situations in which precise operation would be required. 
 
-rppal was then chosen as the GPIO read/write solution because it was the only other well documented library that was still being maintained.
-
-% das timing damit nicht nachvollziehbar ist, nicht gewusst. information erfahren, erwartet, dass es irgendwann probleme macht.
-
-% sysfs is a pseudo file system provided by the Linux kernel that exports information about various kernel subsystems, hardware devices, and associated device drivers from the kernel's device model to user space through virtual files.[1] In addition to providing information about various devices and kernel subsystems, exported virtual files are also used for their configuring.
-
-% rust-sysfs-gpio 
-
-% rust-sysfs-gpio \cite{rust-sysfs-gpio} was chosen because of it was still being maintained and was reasonably popular.  
-
-% sysfs latenz nicht berechenbar
-
-% raspberry pi spezifische memory writes
-
-% statt selbst zu implementieren: rppal
-
-
-
+rppal \cite{rppal} was then chosen as the GPIO read/write solution because it was the only other well documented library that was still being maintained that uses direct memory writes to access the pins.
 
 \subsection{Advanced software control}
 Mission Control like facilities have the ability to correct the state of a rocket during flight by communicating with core components over predefined protocols. To allow for fast experimentation it was determined that this approach would be adopted for the first prototype.
@@ -219,7 +202,7 @@ A state is a bundle of all necessary instructions required for operation. The fi
 % protokoll: tcp über das json verschickt wird
 
 
-% library in python to do so
+% library in python 
 % instead of directly sending ms a cycle time and ratio are provided
 
 \subsection{Basic physical user interface}
@@ -231,8 +214,7 @@ A state is a bundle of all necessary instructions required for operation. The fi
 
 
 \subsection{Autonomous software control}
-% 
-
+%
 
 \section{Hummingbird 9000}
 
