@@ -96,7 +96,7 @@ With most mechanical components in-place the attention was shifted to the electr
 To control the electronic valve with a microcomputer later on, it was plugged into the normal close port of a relay which allows for programmatic switching of \SI{24}{\volt} power. 
 
 \subsubsection{Control components}
-A Raspberry Pi 3 Model B \cite{raspberry-pi} was chosen as the development board because it enables high and low level programming with short iteration cycles thanks to a full-fledged underlying operating system \cite{raspbian} with networking capabilities. Direct memory access to the GPIO ports is well documented, I2C and SPI are supported with kernel command line flags and example code for most sensors is available on the internet. Additionally, a Raspberry Pi did not have to be acquired because one was already available.
+A Raspberry Pi 3 Model B \cite{raspberry-pi} was chosen as the development board because it enables high and low level programming with short iteration cycles thanks to a full-fledged underlying operating system \cite{raspbian} with networking capabilities. Manipulation of the GPIO ports is well documented, I2C and SPI are supported with kernel command line flags and example code for most sensors is available on the internet. Additionally, a Raspberry Pi did not have to be acquired because one was already available.
 
 \begin{figure}[h]
 \centering
@@ -161,7 +161,42 @@ Experimentation with test programs revealed that a full on/off cycle of the valv
 
 A simple valve control program was written to verify this calculation. Values as low as \SI{40}{\milli\second} still resulted in a full on/off switch but were ultimately decided against because the chance of them wearing out the hardware after lengthy continuous operation was deemed to high.
 
-After these tests were conducted, a low latency way of interacting with the GPIO pins on the Raspberry Pi from within Rust had to be found. A project search on GitHub revealed multiple libraries that offer this functionality. rust-sysfs-gpio \cite{rust-sysfs-gpio} was chosen because of it was still being maintained and was reasonably popular.  
+After these tests were conducted, a low latency way of interacting with the GPIO pins on the Raspberry Pi from within Rust had to be found. A project search on GitHub revealed multiple libraries that offer this functionality. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llll}
+\textbf{Library} & \textbf{Access method} & \textbf{Maintained} & \textbf{Documented} \\
+cupi             & sysfs / memory access  & No                  & No                  \\
+cylus            & memory access          & No                  & No                  \\
+gpio-rs          & sysfs / memory access  & No                  & No                  \\
+rppal            & memory access          & Yes                 & Yes                 \\
+rust-sysfs-gpio  & sysfs                  & Yes                 & Yes
+\end{tabular}
+\caption{Rust GPIO library comparison. The access }
+\end{table}
+
+sysfs is a pseudo Linux file system that provides information about kernel subsystems, hardware devices, and device drivers in addition to the ability to configure them. It lives in userspace and can not be relied upon if timing of operations is required to be deterministic. 
+
+rust-sysfs-gpio was selected as the GPIO library because of it's widespread usage, it's detailed documentation and a high commit frequency addressing issues reported by users. The access method was not deemed relevant at this point in time because the fact that sysfs operation timings are not deterministic was not obtained until first experiments were conducted. While timing was not an issue during these tests, the decision was made to switch to a direct memory access solution because of concerns regarding future situations in which precise operation would be required. 
+
+rppal was then chosen as the GPIO read/write solution because it was the only other well documented library that was still being maintained.
+
+% das timing damit nicht nachvollziehbar ist, nicht gewusst. information erfahren, erwartet, dass es irgendwann probleme macht.
+
+% sysfs is a pseudo file system provided by the Linux kernel that exports information about various kernel subsystems, hardware devices, and associated device drivers from the kernel's device model to user space through virtual files.[1] In addition to providing information about various devices and kernel subsystems, exported virtual files are also used for their configuring.
+
+% rust-sysfs-gpio 
+
+% rust-sysfs-gpio \cite{rust-sysfs-gpio} was chosen because of it was still being maintained and was reasonably popular.  
+
+% sysfs latenz nicht berechenbar
+
+% raspberry pi spezifische memory writes
+
+% statt selbst zu implementieren: rppal
+
+
 
 
 \subsection{Advanced software control}
