@@ -236,17 +236,39 @@ To combat the issues of the basic physical user interface it was decided to intr
 
 A Python 3 library was written to simplify working and transmission of states after it became apparent that the same code was repeated several times. It provides a representation of states as objects which can be sent to the daemon without any knowledge of the underlying protocol. 
 
-Hovering the corpus at a specific point along the table leg was not only possible but reproducible at all times with this approach.   
+Hovering the corpus at a specific point along the table leg was not only possible but reproducible with this approach.   
 
 \subsection{Autonomous software control}
-After the manual solution to hover control showed promise, work on an automatic version began. Initially it was planned to utilize a pressure sensor the calculate the required thrust based on the available pressure. This idea had to be scrapped because the cost of a customary pressure sensor was deemed too high at this stage in development, instead a pair of regular top-heads, which are infrared reflection sensors, were used as a light barrier to get started. The A/D converter previously acquired for the basic physical user interface was utilized to obtain readings from the sensors.
+After the manual solution to hover control showed promise, work on an automatic version began. Initially it was planned to utilize a pressure sensor to calculate the required thrust based on the available pressure. This idea had to be discarded because the cost of a customary pressure sensor was deemed too high at this stage in development, instead a pair of regular top-heads, which are infrared reflection sensors, were used as a light barrier to get started. The A/D converter previously acquired for the basic physical user interface was utilized to obtain readings from the sensors.
 
+\subsubsection{Sensor calibration}
+To mitigate different light conditions a sensor calibration stage had to be implemented. Before powering on the valve the top-head sensor values are observed for three seconds. The trigger value is calculated by reducing the average value by 10\%.
+\begin{figure}[h]
+\begin{align*}
+    tv &=\overline{v} * 0.1 && \text{Trigger value} \\
+    v &= \text{Obtained sensor values}
+\end{align*}
+\caption{Formula used by the top-head trigger value calibration stage.}
+\end{figure}
+
+\subsubsection{Self validation}
+To validate if the corpus is properly detected by the top-heads the valve is opened until both sensor have observed the previously calculated trigger value. If a sensor doesn't trigger in a five second grace period, program execution is interrupted and the valve as well as the sensors have to be controlled.
 
 % lösung: top-heads die gratis zur verfügung standen als lichtschranke
 
 % idee: 2 top heads, in deren mitte schweben
 
 % lösung: 1 top head reicht, 2 wurden aber für den fall eines druckabfalls verwendet
+
+Instead of calculating "Operation time" and "Release time" in the controller applications it was decided to move this computation into the daemon because direct timespan manipulation was not utilized. "Operation time" and "Release time" were therefor replaced by "Cycle time" and "Operation ratio".
+
+\begin{figure}[h]
+\centering
+
+\includegraphics[width=150mm]{state_v2}
+
+\caption{States now contains "Cycle time" and "Operation time" instead of "Operation time" and "Release time" because direct timespan manipulation was not utilized.}
+\end{figure}
 
 \section{Hummingbird 9001}
 
