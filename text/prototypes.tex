@@ -1,8 +1,7 @@
-\chapter{Prototypes}
+\chapter{Pigeon 9000}
+\section{Concept}
+\author{Sebastian Schaffler}
 
-\section{Pigeon 9000}
-
-\subsection{Concept}
 The first prototype's name is alluding to Falcon 9 \cite{falcon9} by SpaceX \cite{spacex}, the only reusable orbital class rocket with a propulsively landing booster currently available. 
 
 The cheapest method to model a propulsion system was determined to be the usage of compressed air. 
@@ -23,16 +22,17 @@ The focus of this first prototype was gaining experience handling thrust generat
 \caption{Draft of the first concept on a linear guide. Flexible tubes are fitted to the left and right side of the rocket corpus. Pressurized air is directed through these tubes.}
 \end{figure}
 
-   
-\subsection{Implementation}
-\subsubsection{Planning}
+\section{Hardware implementation}
+\author{Sebastian Schaffler}
+
+\subsection{Planning}
 In the first meeting the most expensive and important part was acquired, a digitally controllable valve by Festo \cite{festo-valve} capable of handling pressures of up to 8bar. Additionally options for a linear guide and the rocket corpus were discussed. Using a table and utilizing it's legs as the guide and a PE pipe as the corpus was deemed the most practical approach. 
 
 Table leg diameters were gathered by browsing the table section of a large furniture store to compare to PE pipes available in nearby hardware stores. When suitable guides and corpora were found they were compared until a \SI{37}{\centi\meter} high side table \cite{table} with a leg diameter of \SI{25}{\milli\meter} and a pipe with \SI{27}{\milli\meter} inner diameter were picked. Additionally a special plastic glue, intended to be used to attach the pressure tubes to the rocket body, was purchased, even though the exact type of pressure tube that was going to be used was still unknown.
 
 After the essential parts were gathered construction work began. 
 
-\subsubsection{Basic components}
+\subsection{Basic components}
 A \SI{5}{\centi\meter} segment of the pipe was cut off to form the demonstrator corpus.
 
 \begin{figure}[h]
@@ -63,7 +63,7 @@ After receiving a PU pressure tube with \SI{6}{\milli\meter} outer diameter and 
 
 Consulting the documentation of the Festo valve revealed the need for a \SI{24}{\volt} power source. At this point in time it was still planned to power the whole prototype off battery power, for the sake of portability. The lack of cheap and long-lasting batteries that could be combined to provide \SI{24}{\volt} led to the conclusion, that a power supply was necessary. This resulted in an online purchase of a laptop charger \cite{power-supply} with the appropriate voltage from a common online retailer.
 
-\subsubsection{Pneumatics 101}
+\subsection{Pneumatics 101}
 Connecting the PU tube to the Festo valve proved difficult because \SI{4}{\milli\meter} inner diameter is not an off-the-shelf size but instead used in industrial applications, therefor visits of every nearby hardware store with the intention of finding fitting connector parts were unsuccessful. Instead of ordering proper parts in a specialized online store, the decision was made to buy parts that were not intended for the tube diameter because long delivery times would have delayed the assembly by about a week. A crimp fitting with \SI{6}{\milli\meter} inner diameter, \SI{10}{\milli\meter}-\SI{16}{\milli\meter} regular hose clamps and \SI{11}{\milli\meter}-\SI{13}{\milli\meter} o-clip hose clamps were purchased. 
 
 Connecting the crimp fitting to the pressure tube was successful with the help of a bunsen burner and a high amount of force. Electrical tape was wrapped around the tube to increase it's diameter in an effort to enable the clamps to fit.
@@ -95,7 +95,7 @@ With most mechanical components in-place the attention was shifted to the electr
 
 To control the electronic valve with a microcomputer later on, it was plugged into the normal close port of a relay which allows for programmatic switching of \SI{24}{\volt} power. 
 
-\subsubsection{Control components}
+\subsection{Control components}
 A Raspberry Pi 3 Model B \cite{raspberry-pi} was chosen as the development board because it enables high and low level programming with short iteration cycles thanks to a full-fledged underlying operating system \cite{raspbian} with networking capabilities. Manipulation of the GPIO ports is well documented, I2C and SPI are supported with kernel command line flags and example code for most sensors is available on the internet. Additionally, a Raspberry Pi did not have to be acquired because one was already available.
 
 \begin{figure}[h]
@@ -110,7 +110,7 @@ An Arduino was decided against mainly because of the slower and less convenient 
 
 Before mounting the components onto the table they were tested individually. Once the functionality of each part was validated a demo application was written in Python to assess their combined functionality by switching the relay on and off. In the first dry run without a compressed air supply the valve emitted an audible click which gave the impression of a full switch operation happening inside the component.
 
-\subsubsection{Finalizing assembly}
+\subsection{Finalizing assembly}
 After these tests where conducted all components were mounted onto the top of the table in addition to a distributor socket with the purpose of simplifying power delivery.
 
 \begin{figure}[h]
@@ -143,6 +143,8 @@ Reviewing the documentation revealed that the minimum amount of pressure require
 
 It was discovered that the compressed air tube coupler contains a cut-off mechanism that prevents air from escaping while it is not connected. This fact was taken advantage of to provide a temporary solution, which entails connecting the air tube only after the threshold is reached. Attaching a cut-off connector between the compressor and the valve was considered as a fix later down the road.
 
+\section{Hardware abstraction layer}
+\author{Philip Trauner}
 
 \subsection{Basic software control}
 NASA's Jet Propulsion Laboratory \cite{jpl} has published a rigorous rule set \cite{jpl-rules} regarding programming conventions of mission critical code. These rules primarily apply to code written in the C programming language and specifically address memory safety issues regarding shared data and resource ownership, that can result in indeterministic behavior. 
@@ -151,7 +153,7 @@ These concerns are also relevant in the information security community, which le
 
 Rust \cite{rust} is one of these languages and was chosen as the foundation of core software components for which reliability and stability is key because the restrictions it imposes on the programmer are very similar to the conventions set up by the NASA Jet Propulsion Laboratory.
 
-\subsubsection{Controlling the valve}
+\subsection{Controlling the valve}
 Experimentation with test programs revealed that a full on/off cycle of the valve, taking the latency introduced by the relay into account, takes at least \SI{70}{\milli\second} according to the their respective documentations. 
 \begin{figure}[h]
 \begin{align*}
@@ -193,22 +195,24 @@ A client/server architecture, networked over the Transmission Control Protocol, 
 
 The server is modeled after the Unix daemon concept and is therefor named pigeond. It is implemented in Rust. The client is referred to as controller and can be written in any programming language that supports sockets, however Python is used exclusively because it's robust standard library allows for quick iteration and experimentation.
 
-The thrust generated by the valve can be controlled by sending a state to the daemon. A state contains the "Operation time" and the "Release time", which are time-spans defined in milliseconds. These values are used to perform pulse-width modulation on the valve. PWM is handled in software instead of utilizing the hardware PWM ports on the Raspberry Pi 3 Model B because those can only be configured over sysfs, which does not guarantee deterministic timing. Additionally, a power flag is present which indicates if the valve should be controlled at all. States are formatted in JSON \cite{json} because of it's broad availability across many programming languages. It is represented as human readable text instead of binary messages, which is useful for debugging purposes. 
+The thrust generated by the valve can be controlled by sending a state to the daemon. A state contains the "operation time" and the "release time", which are time-spans defined in milliseconds. These values are used to perform pulse-width modulation on the valve. PWM is handled in software instead of utilizing the hardware PWM ports on the Raspberry Pi 3 Model B because those can only be configured over sysfs, which does not guarantee deterministic timing. Additionally, a power flag is present which indicates if the valve should be controlled at all. States are formatted in JSON \cite{json} because of it's broad availability across many programming languages. It is represented as human readable text instead of binary messages, which is useful for debugging purposes. 
 
 \begin{figure}[h]
 \centering
 
 \includegraphics[width=155mm]{controller_pushes_state_to_pigeond}
 
-\caption{A controller transmitting a state to the daemon. A state contains all necessary instructions for operation. "Operation time" and "Release time" are time-spans defined in milliseconds, power indicates if the valve should be controlled.}
+\caption{A controller transmitting a state to the daemon. A state contains all necessary instructions for operation. "operation time" and "release time" are time-spans defined in milliseconds, power indicates if the valve should be controlled.}
 \end{figure}
 
 The daemon uses serde \cite{serde} to deserialize JSON to Rust structs because it's the most widely used solution available.
 
-\subsection{Physical user interface}
+\section{Physical user interface}
+\author{Sebastian Schaffler}
+
 To test the daemon/controller approach dictated by the software architecture it was decided to model the physical user interface as a controller.
 
-\subsubsection{Basic}
+\subsection{Basic}
 Instead of directly approaching autonomous rocket control it was decided to experiment with physical user interfaces first. This approach was chosen to test the practicality of the software design and to provide a version that can be used for demonstrations with human interaction. 
 
 A rotary encoder \cite{rotary-encoder} combined with a button was intended as the physical interface of this prototype version because it did not require an analog to digital converter, which would have had to be acquired. After some experimentation with the component it began emitting nonsensical values. This interpreted as a component failure. 
@@ -221,30 +225,58 @@ This concept worked but constantly switching between modes to changes the times 
 
 \begin{figure}[h]
 \begin{align*}
-    ot &=ct * or && \text{Operation time} \\
-    rt &=ct * (1 - or) && \text{Release time} \\ \\
-    ct &= \text{Cycle time} \\
-    or &= \text{Operation ratio}
+    ot &=ct * or && \text{operation time} \\
+    rt &=ct * (1 - or) && \text{release time} \\ \\
+    ct &= \text{cycle time} \\
+    or &= \text{operation ratio}
 \end{align*}
-\caption{"Operation time" and "Release time" calculation. "Cycle time" is the timespan in which a full on/off switch cycle takes place. "Operation ratio" is a percentage describing the proportion "Operation time" and "Release time" in the specified "Cycle time".}
+\caption{"operation time" and "release time" calculation. "cycle time" is the timespan in which a full on/off switch cycle takes place. "operation ratio" is a percentage describing the proportion "operation time" and "release time" in the specified "cycle time".}
 \end{figure}
 
 This concept was originally developed for the rotary encoder and transferred over to the slide, which brought some issues with it. The physical properties of the linear slide don't allow setting two distinct values at the same time. This is why the button was introduced, however mode switching would led to an immediate value override of the current mode with the value of the previous mode.
 
-\subsubsection{Improved}
-To combat the issues of the basic physical user interface it was decided to introduce a second linear slide, which was not available at the time the basic version was implemented, to enable simultaneous adjustment of "Cycle time" and "Operation ratio". The button was reused to toggle valve power on and off.
+\begin{figure}[h]
+\centering
+
+\includegraphics[height=60mm]{sketch_xx_button_and_slide}
+
+\caption{The basic physical user interface consisting of a button and a linear slide. The button is utilized to switch between "cycle time" and "operation ratio". The slide is used to modify the value of the selected mode.}
+\end{figure}
+
+\subsection{Improved}
+To combat the issues of the basic physical user interface it was decided to introduce a second linear slide, which was not available at the time the basic version was implemented, to enable simultaneous adjustment of "cycle time" and "operation ratio". The button was reused to toggle valve power on and off.
 
 A Python 3 library was written to simplify working and transmission of states after it became apparent that the same code was repeated several times. It provides a representation of states as objects which can be sent to the daemon without any knowledge of the underlying protocol. 
 
 Hovering the corpus at a specific point along the table leg was not only possible but reproducible with this approach.   
 
-\subsection{Autonomous software control}
+\begin{figure}[h]
+\centering
+
+\includegraphics[height=60mm]{sketch_xx_button_and_two_slides}
+
+\caption{The improved physical user interface consisting of a button and two linear slides. The button is toggle the thrust. The left slide is used to modify "operation ratio" and the right one to manipulate "cycle time".}
+\end{figure}
+
+\section{Autonomous software control}
+\author{Philip Trauner}
+
 After the manual solution to hover control showed promise, work on an automatic version began. Initially it was planned to utilize a pressure sensor to calculate the required thrust based on the available pressure. This idea had to be discarded because the cost of a customary pressure sensor was deemed too high at this stage in development, instead a pair of regular top-hats, which are infrared reflection sensors, were used as a light barrier to get started. The A/D converter previously acquired for the basic physical user interface was utilized to obtain readings from the sensors.
 
 A hardware modification was necessary for the corpus to be detectable by the infrared sensors because it did not create a significant enough value spike to reliably determine if it had passed by the top-hats.
 A piece of white paper was therefor attached to the side of the corpus facing the sensors. This resulted in a observable value rise and solved the detection issue.
 
-\subsubsection{Sensor calibration}
+Instead of calculating "operation time" and "release time" in the controller applications it was decided to move this computation into the daemon because direct timespan manipulation was not utilized. "operation time" and "release time" were therefor replaced by "cycle time" and "operation ratio".
+
+\begin{figure}[h]
+\centering
+
+\includegraphics[width=150mm]{state_v2}
+
+\caption{States now contains "cycle time" and "operation time" instead of "operation time" and "release time" because direct timespan manipulation was not utilized.}
+\end{figure}
+
+\subsection{Sensor calibration}
 To mitigate different light conditions a sensor calibration stage had to be implemented. Before powering on the valve the top-hat sensor values are observed for three seconds. The trigger value is calculated by reducing the lowest value by 10\%.
 \begin{figure}[h]
 \begin{align*}
@@ -254,33 +286,60 @@ To mitigate different light conditions a sensor calibration stage had to be impl
 \caption{Formula used in the top-hat trigger value calibration stage.}
 \end{figure}
 
-\subsubsection{Self validation}
+\subsection{Self validation}
 To validate if the corpus is properly detected by the top-hats the valve is opened until both sensors have observed the previously calculated trigger value. If a sensor doesn't trigger in a five second grace period, program execution is interrupted and correct behavior of the valve as well as the sensors has to be confirmed manually.
 
-If self validation succeeds, the corpus is at the highest possible possible on the table leg.   
+If self validation succeeds, the corpus is at the highest possible point on the table leg.
 
-\subsubsection{Automatic hover point detection}
+\subsection{Hovering}
+Initially it was decided that the two infrared sensors should by utilized as boundaries for the hovering location because it was assumed that pressure inconsistencies would require an upper bound to prevent situations in which the thrust changes would cause the corpus to ascend too far. 
+At the beginning of the hovering stage the thrust level would be adjusted to a level that would lead to a descend of the corpus. This descend should be slow enough for the corpus to spend enough time in front of the sensors to allow for thrust modifications.
+These modifications would occur whenever the corpus trigged a top-hat. While the lower barrier was triggered the thrust would be increased and the opposite would happen for the upper bound. After the initial trigger of the upper infrared sensor it was assumed the corpus was in the designated hover area and the thrust would remained unchanged until further modifications were required.
 
+During the implementation of this idea it became apparent that the precise thrust corrections happening at the lower sensor would never cause the corpus to rise above the upper barrier, thus rendering it ineffective. It was decided that the upper sensor would be ignored until a different use-case for it would arise. This change altered the procedure to simply decrease the thrust until the lower sensor was set off and to increase it while the top-hat was triggered.
 
-% lösung: top-hats die gratis zur verfügung standen als lichtschranke
-
-% idee: 2 top heads, in deren mitte schweben
-
-% lösung: 1 top head reicht, 2 wurden aber für den fall eines druckabfalls verwendet
-
-Instead of calculating "Operation time" and "Release time" in the controller applications it was decided to move this computation into the daemon because direct timespan manipulation was not utilized. "Operation time" and "Release time" were therefor replaced by "Cycle time" and "Operation ratio".
+To gradually modify the thrust by a set percentage per second, a time dependent variable was introduced into the calculation. 
 
 \begin{figure}[h]
-\centering
+\begin{verbatim}
+# Fixed cycle time
+CYCLE_TIME = 50
 
-\includegraphics[width=150mm]{state_v2}
+# Percentage modified in 1 second
+RATIO_MODIFIER = 0.02
 
-\caption{States now contains "Cycle time" and "Operation time" instead of "Operation time" and "Release time" because direct timespan manipulation was not utilized.}
+# Start off at 60% thrust
+operation_ratio = 0.6
+
+while running:
+    delta_time = end_time - start_time
+    
+    start_time = time()
+
+    # If lower sensor triggered
+    if lower_top_head > lower_lowest_value:
+        operation_ratio -= (RATIO_MODIFIER * delta_time)
+    else:
+        operation_ratio += (RATIO_MODIFIER * delta_time)
+
+    # Apply thrust modification
+    push_state(CYCLE_TIME, operation_ratio)
+
+    sleep(0.1)
+    end_time = time()
+\end{verbatim}
+\caption{Pseudo code of gradual thrust modification.}
 \end{figure}
 
-\section{Hummingbird 9001}
+Through testing revealed that pressure drops can occur. This can lead to a more rapid descend of the corpus than anticipated. If the corpus drops under the lower top-head, its position is still assumed to be above the sensor by the program and therefor the thrust is continuously lowered. In this state the rocket body can not be recovered autonomously. 
 
-\subsection{Concept}
+To combat this behavior it was decided to utilize the upper sensor, this time as the hover point, and the lower one as a recovery point. If the corpus is detected by the lower sensor the thrust is temporarily increased rapidly to raise the altitude of the body above the hovering point. 
+
+
+
+\chapter{Hummingbird 9001}
+
+\section{Concept}
 
 % 2guides 2 dimentional tilting ability
 
@@ -295,3 +354,4 @@ Instead of calculating "Operation time" and "Release time" in the controller app
 \end{figure}
 
 \subsection{Implementation}
+
