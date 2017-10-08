@@ -239,22 +239,30 @@ A Python 3 library was written to simplify working and transmission of states af
 Hovering the corpus at a specific point along the table leg was not only possible but reproducible with this approach.   
 
 \subsection{Autonomous software control}
-After the manual solution to hover control showed promise, work on an automatic version began. Initially it was planned to utilize a pressure sensor to calculate the required thrust based on the available pressure. This idea had to be discarded because the cost of a customary pressure sensor was deemed too high at this stage in development, instead a pair of regular top-heads, which are infrared reflection sensors, were used as a light barrier to get started. The A/D converter previously acquired for the basic physical user interface was utilized to obtain readings from the sensors.
+After the manual solution to hover control showed promise, work on an automatic version began. Initially it was planned to utilize a pressure sensor to calculate the required thrust based on the available pressure. This idea had to be discarded because the cost of a customary pressure sensor was deemed too high at this stage in development, instead a pair of regular top-hats, which are infrared reflection sensors, were used as a light barrier to get started. The A/D converter previously acquired for the basic physical user interface was utilized to obtain readings from the sensors.
+
+A hardware modification was necessary for the corpus to be detectable by the infrared sensors because it did not create a significant enough value spike to reliably determine if it had passed by the top-hats.
+A piece of white paper was therefor attached to the side of the corpus facing the sensors. This resulted in a observable value rise and solved the detection issue.
 
 \subsubsection{Sensor calibration}
-To mitigate different light conditions a sensor calibration stage had to be implemented. Before powering on the valve the top-head sensor values are observed for three seconds. The trigger value is calculated by reducing the average value by 10\%.
+To mitigate different light conditions a sensor calibration stage had to be implemented. Before powering on the valve the top-hat sensor values are observed for three seconds. The trigger value is calculated by reducing the lowest value by 10\%.
 \begin{figure}[h]
 \begin{align*}
-    tv &=\overline{v} * 0.1 && \text{Trigger value} \\
-    v &= \text{Obtained sensor values}
+    tv &=min\{v_1, \dots, v_n\} * 0.1 && \text{Trigger value} \\
+    v &= \text{Obtained sensor value}
 \end{align*}
-\caption{Formula used by the top-head trigger value calibration stage.}
+\caption{Formula used in the top-hat trigger value calibration stage.}
 \end{figure}
 
 \subsubsection{Self validation}
-To validate if the corpus is properly detected by the top-heads the valve is opened until both sensor have observed the previously calculated trigger value. If a sensor doesn't trigger in a five second grace period, program execution is interrupted and the valve as well as the sensors have to be controlled.
+To validate if the corpus is properly detected by the top-hats the valve is opened until both sensors have observed the previously calculated trigger value. If a sensor doesn't trigger in a five second grace period, program execution is interrupted and correct behavior of the valve as well as the sensors has to be confirmed manually.
 
-% lösung: top-heads die gratis zur verfügung standen als lichtschranke
+If self validation succeeds, the corpus is at the highest possible possible on the table leg.   
+
+\subsubsection{Automatic hover point detection}
+
+
+% lösung: top-hats die gratis zur verfügung standen als lichtschranke
 
 % idee: 2 top heads, in deren mitte schweben
 
