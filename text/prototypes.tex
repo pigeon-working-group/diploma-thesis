@@ -240,6 +240,8 @@ This concept was originally developed for the rotary encoder and transferred ove
 
 \includegraphics[height=60mm]{sketch_xx_button_and_slide}
 
+% replace with actual image
+
 \caption{The basic physical user interface consisting of a button and a linear slide. The button is utilized to switch between "cycle time" and "operation ratio". The slide is used to modify the value of the selected mode.}
 \end{figure}
 
@@ -248,15 +250,7 @@ To combat the issues of the basic physical user interface it was decided to intr
 
 A Python 3 library was written to simplify working and transmission of states after it became apparent that the same code was repeated several times. It provides a representation of states as objects which can be sent to the daemon without any knowledge of the underlying protocol. 
 
-Hovering the corpus at a specific point along the table leg was not only possible but reproducible with this approach.   
-
-\begin{figure}[h]
-\centering
-
-\includegraphics[height=60mm]{sketch_xx_button_and_two_slides}
-
-\caption{The improved physical user interface consisting of a button and two linear slides. The button is toggle the thrust. The left slide is used to modify "operation ratio" and the right one to manipulate "cycle time".}
-\end{figure}
+Hovering the corpus at a specific point along the table leg was not only possible but reproducible with this approach.  
 
 \section{Autonomous software control}
 \author{Philip Trauner}
@@ -276,14 +270,14 @@ Instead of calculating "operation time" and "release time" in the controller app
 \caption{States now contains "cycle time" and "operation time" instead of "operation time" and "release time" because direct timespan manipulation was not utilized.}
 \end{figure}
 
-\subsection{Sensor calibration}
-To mitigate different light conditions a sensor calibration stage had to be implemented. Before powering on the valve the top-hat sensor values are observed for three seconds. The trigger value is calculated by reducing the lowest value by 10\%.
+\subsection{Sensor conditioning}
+To mitigate different light conditions a sensor conditioning stage had to be implemented. Before powering on the valve the top-hat sensor values are observed for three seconds. The trigger value is calculated by reducing the lowest value by 10\%.
 \begin{figure}[h]
 \begin{align*}
     tv &=min\{v_1, \dots, v_n\} * 0.1 && \text{Trigger value} \\
     v &= \text{Obtained sensor value}
 \end{align*}
-\caption{Formula used in the top-hat trigger value calibration stage.}
+\caption{Formula used in the top-hat trigger value conditioning stage.}
 \end{figure}
 
 \subsection{Self validation}
@@ -298,7 +292,7 @@ These modifications would occur whenever the corpus trigged a top-hat. While the
 
 During the implementation of this idea it became apparent that the precise thrust corrections happening at the lower sensor would never cause the corpus to rise above the upper barrier, thus rendering it ineffective. It was decided that the upper sensor would be ignored until a different use-case for it would arise. This change altered the procedure to simply decrease the thrust until the lower sensor was set off and to increase it while the top-hat was triggered.
 
-To gradually modify the thrust by a set percentage per second, a time dependent variable was introduced into the calculation. 
+To gradually modify the thrust by a set percentage per second, delta time was introduced into the calculation. This concept is primarily utilized in games \cite{delta-time} programming to combat varying execution speed and still guarantee deterministic physics, but can also be applied to control loops that interact with network resources with inherent access latency.  
 
 \begin{figure}[h]
 \begin{verbatim}
@@ -323,8 +317,10 @@ while running:
         operation_ratio += (RATIO_MODIFIER * delta_time)
 
     # Apply thrust modification
+    # Execution duration unknown
     push_state(CYCLE_TIME, operation_ratio)
 
+    # Don't pin CPU at 100% utilization
     sleep(0.1)
     end_time = time()
 \end{verbatim}
