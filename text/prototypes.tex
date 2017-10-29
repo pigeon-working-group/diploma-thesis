@@ -96,15 +96,9 @@ With most mechanical components in-place the attention was shifted to the electr
 To control the electronic valve with a microcomputer later on, it was plugged into the normal close port of a relay which allows for programmatic switching of \SI{24}{\volt} power. 
 
 \subsection{Control components}
-A Raspberry Pi 3 Model B \cite{raspberry-pi} was chosen as the development board because it enables high and low level programming with short iteration cycles thanks to a full-fledged underlying operating system \cite{raspbian} with networking capabilities. Manipulation of the GPIO ports is well documented, I2C and SPI are supported with kernel command line flags and example code for most sensors is available on the internet. Additionally, a Raspberry Pi did not have to be acquired because one was already available.
+A Raspberry Pi 3 Model B \cite{raspberry-pi} was chosen as the development board because it enables high and low level programming with short iteration cycles thanks to a full-fledged underlying operating system \cite{raspbian} with networking capabilities. Manipulation of the GPIO ports is well documented, I2C and SPI are supported with kernel command line flags and example code for most sensors is available on the internet. Additionally, a Raspberry Pi did not have to be acquired because one was already available. 
 
-\begin{figure}[h]
-\centering
-
-\includegraphics[height=90mm]{raspberry-pi}
-
-\caption{A Raspberry Pi 3 Model B}
-\end{figure}
+% Am Anfang: Pi Zero W, cross-compilen erwies sich als schwierig. Um nicht zu viel Zeit zu verlieren und eigentlich genug Platz zur Verfügung -> Pi 3
 
 An Arduino was decided against mainly because of the slower and less convenient development experience and the current lack of Rust \cite{rust} support, which is planned to be used as the projects low level language.
 
@@ -128,9 +122,8 @@ In an effort to combat the stiffness of the air tubes they were suspended from t
 After some investigation it was discovered that the length of the dangling tubes is the main determining factor in reducing it's overall stiffness, so instead of routing the tubes from the leg beside the corpus, the upper end of the leg that is diagonal to the guide was chosen as the suspension point. This mounting position was chosen because it provides the greatest possible free hanging distance within the confines of the table.
 
 \begin{figure}[h]
-\centering
 
-\includegraphics[width=165mm]{sketch_05_side_and_topview}
+\includegraphics[width=145mm]{pigeon_final}
 
 \caption{The compressed air tubes are routed directly from the valve, which is in the furthest possible position from the rocket corpus. This way about 90\% of the tube length is able to move freely and therefore minimize overall stiffness.}
 \end{figure}
@@ -151,7 +144,7 @@ NASA's Jet Propulsion Laboratory \cite{jpl} has published a rigorous rule set \c
 
 These concerns are also relevant in the information security community, which led to the creation of compiler languages that can guarantee additional safety at compile time. 
 
-Rust \cite{rust} is one of these languages and was chosen as the foundation of core software components for which reliability and stability is key because the restrictions it imposes on the programmer are very similar to the conventions set up by the NASA Jet Propulsion Laboratory.
+Rust \cite{rust} is one of these languages and was chosen as the foundation of core software components for which reliability and stability is key because the restrictions it imposes on the programmer are very similar to the conventions set up by the NASA Jet Propulsion Laboratory. 
 
 \subsection{Controlling the valve}
 Experimentation with test programs revealed that a full on/off cycle of the valve, taking the latency introduced by the relay into account, takes at least \SI{70}{\milli\second} according to the their respective documentations. 
@@ -331,9 +324,29 @@ Through testing revealed that pressure drops can occur. This can lead to a more 
 
 To combat this behavior it was decided to utilize the upper sensor, this time as the hover point, and the lower one as a recovery point. If the corpus is detected by the lower sensor the thrust is temporarily increased rapidly to raise the altitude of the body above the hovering point. 
 
+\section{Lessons learned}
 
+% hardware
+% tisch: ziemlich erfolgreich, da viel grundfläche für elektronik und integrierte führung, weil nächster prototyp wesentlich größer angedacht tisch nicht mehr sinnvoll
+% rohr: günstig, leicht, simpel und trotzdem geeignet
+% industrieteile: auf kurze zeit schwer erhältlich, einzelhandel benutzerteile meist ausreichend 
+% industriegrößen: meist nicht kompatible mit im einzelhandel erhältlichen teilen
+% 4bar: durch experimente rausgefunden, dass der druck ohne düse für die gewichtsklasse optimal war, bei nächstem prototypen wahrscheinlich mehr da korpus schwerer wird
+% düse: war geplant, bei 4bar allerdings nicht notwendig, weil korpus sehr leicht
+% schalt-latenzen: existieren, kein problem solange man nicht wesentlich unter die angeschreibene spezifikationen geht. ob das auf den nächsten prototyp anwendbar ist, ist unklar
+% lichtschranke: funktioniert, geht recht gut, aber nur an vorgebener schiene und vorgegbenen hover point praktikabel
+% tischbeine: korrodieren nach einer zeit, silikonspray und wd40
+% mathematik: berechnungen hätten keine anwendung finden können, da die resultate und erkentnisse durch einfaches ausprobieren schneller und anschaulicher waren
+% 24v netzteil: tends to explode 
 
-\chapter{Hummingbird 9001}
+% software 
+% rust: eindeutig keine prototyping sprache, wenn code tatsächlich fertig höchst robust durch restriktionen der sprache
+% daemon modell: erlaubte für schnelles prototyping, abstahierungsebene in nächstem prototypen höher setzten, da oft selber code in ansteuerungsprogrammen verwendet
+% raspberry pi: dadurch das volles os mit kompletten netzwerkstack zur verfügung steht -> programmierung erheblich erleichtert über microcontroller
+% gpio dma: präemtiv, da befürchtung bestaden ist, dass die zusätzliche latenz von sysfs probleme machen könnte. wird beim zweiten prototypen auch gemacht, da kein extra aufwand und sache weniger die undeterministisch ist 
+% cross-compilen: für code der compiliert werden muss beste lösung, da selbst pi 3 nicht sonderlich schnell rut compilen kann
+
+\chapter{Pigeon 9001}
 
 \section{Concept}
 
