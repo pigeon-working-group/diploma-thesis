@@ -23,8 +23,6 @@ The focus of this first prototype was gaining experience handling thrust generat
 \end{figure}
 
 \section{Hardware implementation}
-\author{Sebastian Schaffler}
-
 \subsection{Planning}
 In the first meeting the most expensive and important part was acquired, a digitally controllable valve by Festo \cite{festo-valve} capable of handling pressures of up to 8bar. Additionally options for a linear guide and the rocket corpus were discussed. Using a table and utilizing its legs as the guide and a PE pipe as the corpus was deemed the most practical approach. 
 
@@ -361,12 +359,21 @@ Components underneath the table-top: PU tubes connecting the corpus to the valve
 
 
 \chapter{Pigeon 9001}
-
 \section{Concept}
 
-% 2guides 2 dimentional tilting ability
+Pigeon 9000 taught valuable lessons regarding hardware and software design principles, which could be applied to the second prototype. To get closer to the desired goal of a rocket landing module, another degree of freedom, which has to be controlled by software, was added. In addition to movement along the y-axis, tilting capabilities around the z-axis were envisioned. 
 
-% use of onboard sencors (accelerometer, gyrometer, ultrasound distance)
+A two valve control solution was deemed to be necessary to achieve controlled descend or hover. 
+
+In order to block all types of undesired movement the linear guide concept utilized in the first prototype had to be modified. The circular cross-section of the previous guide was not suitable because of its rotational symmetry, which would allow for rotation around the y-axis. It was suspected that a two part guide design would be the simplest approach to prohibit this behavior.
+
+The characteristics of the infrared reflection sensors utilized in the first prototype, and their consequential mounting positions  limited the measuring precision to only a few points along the linear guide and had to be heavily revised. It was decided to mount different kinds of sensors on the corpus itself, to measure elevation, tilt, and acceleration. In addition to sensors on the corpus it was also deemed necessary to install a pressure sensor off-corpus because this concept also envisions an integrated pressure tank to test the algorithms with very limited propellant.
+
+Air pressure was again chosen as the preferred propellant because it is inexpensive, easy to handle, and supply. Additionally, part acquisition knowledge obtained through work on the first prototype could be applied. The relatively low pressure of customary air compressors was also deemed beneficial because component prices and complexity can be kept to a minimum.
+
+Pigeon 9000 and its relatively small scale was sufficient to design and test preliminary algorithms. Scaling up the second prototype relative to the first one was expected to increase the likeness of the demonstrator to the final goal of a modular landing solution for model rockets. Continuing the use of a table, albeit a larger one, was assumed to hinder portability, which is still a requirement. It was decided to construct an individualized and fold-able test-stand which can be transported easily.
+
+The software architecture chosen for Pigeon 9000 and the resulting programming interface was suitable for the type of controller applications that were developed for the platform. The second prototype requires a different programming interface because it is assumed to be practical to raise the abstraction layer. Instead of supplying low level valve control instructions it was decided to switch over to location parameters.
 
 \begin{figure}[h]
 \centering
