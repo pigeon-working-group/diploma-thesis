@@ -1,0 +1,28 @@
+\section{Lessons learned}
+\subsection{Hardware}
+\author{Sebastian Schaffler}
+
+\begin{description}
+\item [Table] The decision to use one of the table legs as the guide for the corpus worked well; convenient to carry around; enough surface area for electrical components on top; table legs tend to corrode after a while$\,\to\,$silicon spray and WD40 solved this issue; will not be used for next prototype because a bigger solution is necessary
+\item [PE pipe] Cheap to acquire; very light at \SI{8,13}{\gram}; reasonably tight fit to guide; pipe with higher radius will be used for the next prototype
+\item [Industrial parts] Hard to acquire on a short time notice; customary parts often equally adequate; still sometimes necessary because no customary solutions are available
+\item [Industrial sizes] Almost always incompatible with equipment purchased in non-specialized retail stores
+\item [Pressure] \SI{4}{\bar} was determined to be the optimal pressure for the corpus without nozzles; more pressure required for next prototype because it will be heavier
+\item [Nozzle] Not necessary for the first prototype because the corpus was very light; will be required for the second prototype because of increased weight
+\item [Valve latency] Insignificant for the first prototype as long as the delays described in the respective documentation were not undercut; same valve and relay will be used in the next prototype$\,\to\,$effects are also assumed to be minimal
+\item [Light barrier] Worked well for the first prototype; concept can not be used for the second prototype because non-fixed hovering should be supported; sensor measuring actual altitude will have to be used
+\item [Power supply] Unexpectedly broke down; the same one was already purchased for the second prototype; might break down again
+\item [Pressure regulator] Was introduced because the valve requires a minimum amount of pressure to function$\,\to\,$was not possible without a separate cut-off mechanism; pressure regulator was decided on because it can also reduce pressure from variable sources to the required amount
+\end{description}
+
+\subsection{Software}
+\author{Philip Trauner}
+
+\begin{description}
+\item [Daemon architecture] Allowed for the usage of Python as a prototyping language; too much code duplication in the controller programs$\,\to\,$abstraction layer too low; more logic in the daemon in the next prototype
+\item [Rust] Prototyping efforts were hindered by the restrictions the compiler imposes on the programmer and therefor slow; high code quality and robustness was attained because of these same restrictions; will be utilized in the next prototype more extensively, which will be more time-consuming
+\item [Python] Allowed for quick prototyping with reasonable execution speed; too much code duplication because no proper global library system was used; will not be used as extensively in the next prototype because more logic will be implemented in Rust
+\item [Raspberry Pi] Wireless access and the Linux-based operating system resulted in high development speed and comfort; another Raspberry Pi will be used in the next prototype
+\item [GPIO DMA] Was introduced preemptively to combat possibly indeterministic valve control latency; no additional complexity over sysfs solution; will be utilized for the second prototype 
+\item [Cross-compiling] Time-consuming to set up; best solution for Rust because compile speed is significantly higher on a personal computer than it is on a Raspberry Pi; will be used for the second prototype 
+\end{description}

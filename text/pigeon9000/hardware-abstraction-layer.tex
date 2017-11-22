@@ -1,0 +1,122 @@
+\section{Hardware abstraction layer}
+\author{Philip Trauner}
+
+\subsection{The JPL Institutional Coding Standard}
+\subsubsection{History}
+The 1930s marked the first American rocket propulsion efforts under the Caltech professor Theodore von Kármán and several graduate students of his. During the second world war they were tasked with the technical analysis of rockets produced as part of the German V-2 program. This led to the proposal of a research project aimed at duplicating the German designs. In the proposal the team referred to themselves as “the Jet Propulsion Laboratory” for the first time.
+
+Explorer 1, the first American satellite, was constructed by JPL. It was successfully launched in 1958 which led to the creation of the National Aeronautics and Space Administration, abbreviated as NASA, in the same year. JPL became one of the pivotal research organizations within NASA which has allowed them to gather valuable expertise throughout the 20th century. 
+
+In 2009, after approximately 75 years of activity in the aerospace and rocket science field, they published a previously internal set of rules regarding the implementation of embedded mission critical code in the C programming language. 
+
+\subsubsection{Contents}
+Instead of ignoring previous efforts at establishing coding standards for C, the document specifically endorses the MISRA-C:2004 guidelines originally developed for use in the automotive industry, and a set of coding rules referred to as “The Power of 10”. 
+
+Multi-threaded programming is often required in aeronautical applications, even though it can cause safety and reliability concerns when conducted in the C programming language because of its low level nature. The JPL standard contains guidelines that help mitigate these issues.
+
+It is split into six levels of compliance, whereas the last two are excerpts from the MISRA-C:2004 standard. The first level describes language spec compliance, the second one focuses on predictable execution, defensive coding tactics are discussed in the third level, and the fourth level describes best-practices to ensure code clarity. Every level contains a certain amount of rules that have to be fulfilled to comply with the standard.
+
+Many rules specifically address characteristics of programs implemented in the C programming language.
+
+One of the main software design goals of Pigeon 9000 was to utilize an alternative programming languages that can circumvent certain rules by providing additional compile-time and run-time safety. 
+
+Rust \cite{rust} is one of these languages and was chosen as the foundation of core software components for which reliability and stability is key because the restrictions it imposes on the programmer are very similar to the conventions set up by the NASA Jet Propulsion Laboratory. 
+
+
+\subsection{Controlling the valve}
+Experimentation with test programs revealed that a full on/off cycle of the valve, taking the latency introduced by the relay into account, takes at least \SI{70}{\milli\second} according to the their respective documentations. 
+\begin{figure}[h]
+\begin{align*}
+    \SI{19}{\milli\second} + \SI{10}{\milli\second} &=\SI{29}{\milli\second} && \text{Valve switch on time} + \text{Relay switch on time} \\
+    \SI{36}{\milli\second} + \SI{5}{\milli\second}  &=\SI{41}{\milli\second} && \text{Valve switch off time} + \text{Relay switch off time}\\
+    \SI{29}{\milli\second} + \SI{41}{\milli\second} &=\SI{70}{\milli\second} 
+\end{align*}
+\caption{Minimum on/off cycle time of the valve control setup.}
+\end{figure}
+
+A simple valve control program was written to verify this calculation. Values as low as \SI{40}{\milli\second} still resulted in a full on/off switch but were ultimately decided against because the chance of them wearing out the hardware after lengthy continuous operation was deemed to high.
+
+After these tests were conducted, a low latency way of interacting with the GPIO pins on the Raspberry Pi from within Rust had to be found. A project search on GitHub revealed multiple libraries that offer this functionality. 
+
+\begin{table}[h]
+\centering
+\begin{tabular}{llll}
+\textbf{Library} & \textbf{Access method} & \textbf{Maintained} & \textbf{Documented} \\
+cupi             & sysfs / memory access  & No                  & No                  \\
+cylus            & memory access          & No                  & No                  \\
+gpio-rs          & sysfs / memory access  & No                  & No                  \\
+rppal            & memory access          & Yes                 & Yes                 \\
+rust-sysfs-gpio  & sysfs                  & Yes                 & Yes
+\end{tabular}
+\caption{Rust General Purpose Input Output library comparison. Access method describes the way the library interacts with the GPIO pins. If an update has happened in the last three months the project is considered maintained. Documentation is judged on the fact that there is text in addition to code which describes the functionality and usage of the library.}
+\end{table}
+
+sysfs is a pseudo Linux file system that provides information about kernel subsystems, hardware devices, and device drivers in addition to the ability to configure them. It lives in userspace and can not be relied upon if timing of operations is required to be deterministic. 
+
+rust-sysfs-gpio \cite{rust-sysfs-gpio} was selected as the GPIO library because of its widespread usage, its detailed documentation and a high commit frequency addressing issues reported by users. The access method was not deemed relevant at this point in time because the fact that sysfs operation timings are not deterministic was not known until first experiments were conducted. While timing was not an issue during these tests, the decision was made to switch to a direct memory access solution because of concerns regarding future situations in which precise operation would be required. 
+
+rppal \cite{rppal} was then chosen as the GPIO read/write solution because it was the only other well documented library that was still being maintained and uses direct memory writes to access the pins.
+
+
+\subsection{Advanced software control}
+Mission Control like facilities have the ability to correct the state of a rocket during flight by communicating with core components over predefined protocols. To allow for fast experimentation it was determined that this approach would be adopted for the first prototype.
+
+A client/server architecture, networked over the Transmission Control Protocol, was chosen to accomplish this design goal because the hardware setup guarantees that a stable Ethernet connection is present at all times. Additionally, client software can also be executed on the same microcomputer that the server is running on.
+
+The server is modeled after the Unix daemon concept and is therefor named pigeond. It is implemented in Rust. The client is referred to as controller and can be written in any programming language that supports sockets, however Python is used exclusively because its robust standard library allows for quick iteration and experimentation.
+
+The thrust generated by the valve can be controlled by sending a state to the daemon. A state contains the "operation time" and the "release time", which are time-spans defined in milliseconds. These values are used to perform pulse-width modulation on the valve. PWM is handled in software instead of utilizing the hardware PWM ports on the Raspberry Pi 3 Model B because those can only be configured over sysfs, which does not guarantee deterministic timing. Additionally, a power flag is present which indicates if the valve should be controlled at all. States are formatted in JSON \cite{json} because of its broad availability across many programming languages. It is represented as human readable text instead of binary messages, which is useful for debugging purposes. 
+
+\begin{figure}[h]
+\centering
+
+\includegraphics[width=155mm]{controller_pushes_state_to_pigeond}
+
+\caption{A controller transmitting a state to the daemon. A state contains all necessary instructions for operation. "operation time" and "release time" are time-spans defined in milliseconds, power indicates if the valve should be controlled.}
+\end{figure}
+
+The daemon uses serde \cite{serde} to deserialize JSON to Rust structs because its the most widely used solution available.
+
+\section{Physical user interface}
+\author{Sebastian Schaffler}
+
+To test the daemon/controller approach dictated by the software architecture it was decided to model the physical user interface as a controller.
+
+\subsection{Basic}
+Instead of directly approaching autonomous rocket control it was decided to experiment with physical user interfaces first. This approach was chosen to test the practicality of the software design and to provide a version that can be used for demonstrations with human interaction. 
+
+A rotary encoder \cite{rotary-encoder} combined with a button was intended as the physical interface of this prototype version because it did not require an analog to digital converter, which would have had to be acquired. After some experimentation with the component it began emitting nonsensical values. This interpreted as a component failure. 
+
+A linear slide was then chosen to directly control the thrust generated by the valve. To determine the slide position an analog to digital converter was now necessary. A MCP3008 \cite{mcp3008} was chosen because a library \cite{mcp3008-library} to interact with its 8 input channels was already available. 
+
+To obtain a millisecond value from the linear slide its position is converted to a percentage based against the full slide length and then multiplied by a constant timespan of \SI{100}{\milli\second}. The button is used to alternate between "operation time" and "release time" mode. 
+
+This concept worked but constantly switching between modes to changes the times in proportion to each other was deemed not user friendly, instead the mode switching idea was reused to modify the previously constant time, referred to as "cycle time", and a proportional ratio between "operation time" and "release time" called "operation ratio".
+
+\begin{figure}[h]
+\begin{align*}
+    ot &=ct * or && \text{operation time} \\
+    rt &=ct * (1 - or) && \text{release time} \\ \\
+    ct &= \text{cycle time} \\
+    or &= \text{operation ratio}
+\end{align*}
+\caption{"operation time" and "release time" calculation. "cycle time" is the timespan in which a full on/off switch cycle takes place. "operation ratio" is a percentage describing the proportion "operation time" and "release time" in the specified "cycle time".}
+\end{figure}
+
+This concept was originally developed for the rotary encoder and transferred over to the slide, which brought some issues with it. The physical properties of the linear slide don't allow setting two distinct values at the same time. This is why the button was introduced, however mode switching would led to an immediate value override of the current mode with the value of the previous mode.
+
+\begin{figure}[h]
+\centering
+
+\includegraphics[height=60mm]{sketch_xx_button_and_slide}
+
+
+\caption{The basic physical user interface consisting of a button and a linear slide. The button is utilized to switch between "cycle time" and "operation ratio". The slide is used to modify the value of the selected mode.}
+\end{figure}
+
+\subsection{Improved}
+To combat the issues of the basic physical user interface it was decided to introduce a second linear slide, which was not available at the time the basic version was implemented, to enable simultaneous adjustment of "cycle time" and "operation ratio". The button was reused to toggle valve power on and off.
+
+A Python 3 library was written to simplify working and transmission of states after it became apparent that the same code was repeated several times. It provides a representation of states as objects which can be sent to the daemon without any knowledge of the underlying protocol. 
+
+Hovering the corpus at a specific point along the table leg was not only possible but reproducible with this approach.  

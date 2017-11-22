@@ -1,0 +1,87 @@
+\section{Autonomous software control}
+\author{Philip Trauner}
+
+After the manual solution to hover control showed promise, work on an automatic version began. Initially it was planned to utilize a pressure sensor to calculate the required thrust based on the available pressure. This idea had to be discarded because the cost of a customary pressure sensor was deemed too high at this stage in development, instead a pair of regular top-hats, which are infrared reflection sensors, were used as a light barrier to get started. The A/D converter previously acquired for the basic physical user interface was utilized to obtain readings from the sensors.
+
+A hardware modification was necessary for the corpus to be detectable by the infrared sensors because it did not create a significant enough value spike to reliably determine if it had passed by the top-hats.
+A piece of white paper was therefor attached to the side of the corpus facing the sensors. This resulted in a observable value rise and solved the detection issue.
+
+Instead of calculating "operation time" and "release time" in the controller applications it was decided to move this computation into the daemon because direct timespan manipulation was not utilized. "operation time" and "release time" were therefor replaced by "cycle time" and "operation ratio".
+
+\begin{figure}[h]
+\centering
+
+\includegraphics[width=150mm]{state_v2}
+
+\caption{States now contains "cycle time" and "operation time" instead of "operation time" and "release time" because direct timespan manipulation was not utilized.}
+\end{figure}
+
+\subsection{Sensor conditioning}
+To mitigate different light conditions a sensor conditioning stage had to be implemented. Before powering on the valve the top-hat sensor values are observed for three seconds. The trigger value is calculated by reducing the lowest value by 10\%.
+\begin{figure}[h]
+\begin{align*}
+    tv &=min\{v_1, \dots, v_n\} * 0.1 && \text{Trigger value} \\
+    v &= \text{Obtained sensor value}
+\end{align*}
+\caption{Formula used in the top-hat trigger value conditioning stage.}
+\end{figure}
+
+\subsection{Self validation}
+To validate if the corpus is properly detected by the top-hats the valve is opened until both sensors have observed the previously calculated trigger value. If a sensor doesn't trigger in a five second grace period, program execution is interrupted and correct behavior of the valve as well as the sensors has to be confirmed manually.
+
+If self validation succeeds, the corpus is at the highest possible point on the table leg.
+
+\subsection{Hovering}
+Initially it was decided that the two infrared sensors should by utilized as boundaries for the hovering location because it was assumed that pressure inconsistencies would require an upper bound to prevent situations in which the thrust changes would cause the corpus to ascend too far. 
+At the beginning of the hovering stage the thrust level would be adjusted to a level that would lead to a descend of the corpus. This descend should be slow enough for the corpus to spend enough time in front of the sensors to allow for thrust modifications.
+These modifications would occur whenever the corpus trigged a top-hat. While the lower barrier was triggered the thrust would be increased and the opposite would happen for the upper bound. After the initial trigger of the upper infrared sensor it was assumed the corpus was in the designated hover area and the thrust would remained unchanged until further modifications were required.
+
+During the implementation of this idea it became apparent that the precise thrust corrections happening at the lower sensor would never cause the corpus to rise above the upper barrier, thus rendering it ineffective. It was decided that the upper sensor would be ignored until a different use-case for it would arise. This change altered the procedure to simply decrease the thrust until the lower sensor was set off and to increase it while the top-hat was triggered.
+
+To gradually modify the thrust by a set percentage per second, delta time was introduced into the calculation. This concept is primarily utilized in games \cite{delta-time} programming to combat varying execution speed and still guarantee deterministic physics, but can also be applied to control loops that interact with network resources with inherent access latency.  
+
+\begin{figure}[h]
+\begin{minted}{python}
+# Fixed cycle time
+CYCLE_TIME = 50
+
+# Percentage modified in 1 second
+RATIO_MODIFIER = 0.02
+
+# Start off at 60% thrust
+operation_ratio = 0.6
+
+while running:
+    delta_time = end_time - start_time
+    
+    start_time = time()
+
+    # If lower sensor triggered
+    if lower_top_head > lower_lowest_value:
+        operation_ratio -= (RATIO_MODIFIER * delta_time)
+    else:
+        operation_ratio += (RATIO_MODIFIER * delta_time)
+
+    # Apply thrust modification
+    # Execution duration unknown
+    push_state(CYCLE_TIME, operation_ratio)
+
+    # Don't pin CPU at 100% utilization
+    sleep(0.1)
+    end_time = time()
+\end{minted}
+\caption{Pseudo code of gradual thrust modification.}
+\end{figure}
+
+Thorough testing revealed that pressure drops can occur. This can lead to a more rapid descend of the corpus than anticipated. If the corpus drops under the lower top-head, its position is still assumed to be above the sensor by the program and therefor the thrust is continuously lowered. In this state the rocket body can not be recovered autonomously. 
+
+To combat this behavior it was decided to utilize the upper sensor, this time as the hover point, and the lower one as a recovery point. If the corpus is detected by the lower sensor the thrust is temporarily increased rapidly to raise the altitude of the body above the hovering point. 
+
+\begin{figure}[hhtb]
+
+\includegraphics[width=\textwidth]{pigeon_final}
+
+\caption{Final assembly of Pigeon 9000. \\
+Components on top of the table: 5V and 24V power supply connected to a distributor socket; valve with attached pressure regulator; two linear slides, a button and a relay which are plugged into a breadboard that is fitted with an MCP3008 A/D converter; the board is coupled to the Raspberry Pi 3 with a GPIO ribbon cable connector \\
+Components underneath the table-top: PU tubes connecting the corpus to the valve while supplying pressurized air; white paper patch on the rocket body to improve detection accuracy of two top-hat sensors which are connected to the A/D converter on the breadboard;}
+\end{figure}
