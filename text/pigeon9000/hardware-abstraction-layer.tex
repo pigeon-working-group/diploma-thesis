@@ -1,28 +1,6 @@
 \section{Hardware abstraction layer}
 \author{Philip Trauner}
 
-\subsection{The JPL Institutional Coding Standard}
-\subsubsection{History}
-The 1930s marked the first American rocket propulsion efforts under the Caltech professor Theodore von Kármán and several graduate students of his. During the second world war they were tasked with the technical analysis of rockets produced as part of the German V-2 program. This led to the proposal of a research project aimed at duplicating the German designs. In the proposal the team referred to themselves as “the Jet Propulsion Laboratory” for the first time.
-
-Explorer 1, the first American satellite, was constructed by JPL. It was successfully launched in 1958 which led to the creation of the National Aeronautics and Space Administration, abbreviated as NASA, in the same year. JPL became one of the pivotal research organizations within NASA which has allowed them to gather valuable expertise throughout the 20th century. 
-
-In 2009, after approximately 75 years of activity in the aerospace and rocket science field, they published a previously internal set of rules regarding the implementation of embedded mission critical code in the C programming language. 
-
-\subsubsection{Contents}
-Instead of ignoring previous efforts at establishing coding standards for C, the document specifically endorses the MISRA-C:2004 guidelines originally developed for use in the automotive industry, and a set of coding rules referred to as “The Power of 10”. 
-
-Multi-threaded programming is often required in aeronautical applications, even though it can cause safety and reliability concerns when conducted in the C programming language because of its low level nature. The JPL standard contains guidelines that help mitigate these issues.
-
-It is split into six levels of compliance, whereas the last two are excerpts from the MISRA-C:2004 standard. The first level describes language spec compliance, the second one focuses on predictable execution, defensive coding tactics are discussed in the third level, and the fourth level describes best-practices to ensure code clarity. Every level contains a certain amount of rules that have to be fulfilled to comply with the standard.
-
-Many rules specifically address characteristics of programs implemented in the C programming language.
-
-One of the main software design goals of Pigeon 9000 was to utilize an alternative programming languages that can circumvent certain rules by providing additional compile-time and run-time safety. 
-
-Rust \cite{rust} is one of these languages and was chosen as the foundation of core software components for which reliability and stability is key because the restrictions it imposes on the programmer are very similar to the conventions set up by the NASA Jet Propulsion Laboratory. 
-
-
 \subsection{Controlling the valve}
 Experimentation with test programs revealed that a full on/off cycle of the valve, taking the latency introduced by the relay into account, takes at least \SI{70}{\milli\second} according to the their respective documentations. 
 \begin{figure}[h]
