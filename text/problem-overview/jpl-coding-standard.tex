@@ -1,0 +1,49 @@
+\section{The JPL Institutional Coding Standard}
+\subsection{History}
+The 1930s marked the first American rocket propulsion efforts under the Caltech professor Theodore von Kármán and several graduate students of his. During the second world war they were tasked with the technical analysis of rockets produced as part of the German V-2 program. This led to the proposal of a research project aimed at duplicating the German designs. In the proposal the team referred to themselves as “the Jet Propulsion Laboratory” for the first time.
+
+Explorer 1, the first American satellite, was constructed by JPL. It was successfully launched in 1958 which led to the creation of the National Aeronautics and Space Administration, abbreviated as NASA, in the same year. JPL became one of the pivotal research organizations within NASA which has allowed them to gather valuable expertise throughout the 20th century. 
+
+In 2009, after approximately 75 years of activity in the aerospace and rocket science field, they published a previously internal set of rules regarding the implementation of embedded mission critical code in the C programming language. 
+
+\subsection{Contents}
+Instead of ignoring previous efforts at establishing coding standards for C, the document specifically endorses the MISRA-C:2004 guidelines originally developed for use in the automotive industry, and a set of coding rules referred to as “The Power of 10”. 
+
+Multi-threaded programming is often required in aeronautical applications, even though it can cause safety and reliability concerns when conducted in the C programming language because of its low level nature. The JPL standard contains guidelines that help mitigate these issues.
+
+It is split into six levels of compliance, whereas the last two are excerpts from the MISRA-C:2004 standard. The first level describes language spec compliance, the second one focuses on predictable execution, defensive coding tactics are discussed in the third level, and the fourth level describes best-practices to ensure code clarity. Every level contains a certain amount of rules that have to be fulfilled to comply with the standard.
+
+Many rules specifically address characteristics of programs implemented in the C programming language.
+
+One of the main software design goals of Pigeon 9000 was to evaluate alternative programming languages that can circumvent certain rules by providing additional compile-time and run-time safety.
+
+\subsection{Alternative languages}
+
+\subsubsection{Go}
+\begin{description}
+\item [Memory safety] 
+\item [Garbage collection] 
+\item [Tooling]
+\item [Platform independence] 
+\item [Cross compiling]  
+\end{description}
+
+A set of compiled languages 
+
+imperative, non functional, no "stop the world" garbage collector, package management, straight forward build system in regards to cross-compilation
+
+Go, Rust, Swift, D, C++, Crystal
+
+% go: has garbage collector, still taken into consideration because marketing material promises practically no pauses; lack of generics often cited concern but not relevant for rocket programming; package management tightly integrated with git, version pinning just recently; was not chosen because marketing claims about garbage collector were wrong, uses concurrent, tri-color, mark-sweep collector, an idea first proposed by Dijkstra in 1978 https://dl.acm.org/citation.cfm?id=359655; cross compiling supported in default toolchain
+
+% swift: uses ref counting for garbage collection -> only introduces deterministic delays; package manager introduced in 3.0; originally mac os exclusive, now supports linux; gui libraries not avaliable on linux, not important; cross compiling supported in default toolchain
+
+% rust: ownership model -> only one reference to resource; 
+
+% D: very similar goals to rust, tooling not even close; garbage collected by default, can be disabled
+
+% C++: same shit as C just with objects; no packaging ecosystem; cross compiling challenging with tools like cmake
+
+% Crystal: thrown into the mix because of its very pleasant syntax, very impressive, has not reached version 1 yet, breaking changes possible, slow release cycles
+
+Rust \cite{rust} is one of these languages and was chosen as the foundation of core software components for which reliability and stability is key because the restrictions it imposes on the programmer are very similar to the conventions set up by the NASA Jet Propulsion Laboratory. 
