@@ -1,0 +1,76 @@
+\section{The JPL Institutional Coding Standard}
+In 2009, after approximately 75 years of activity in the aerospace and rocket science field, JPL published a previously internal set of rules regarding the implementation of embedded mission critical code in the C programming language. 
+
+\subsection{Contents}
+Instead of ignoring previous efforts at establishing coding standards for C, the document specifically endorses the MISRA-C:2004 guidelines originally developed for use in the automotive industry, and a set of coding rules referred to as “The Power of 10”. 
+
+Multi-threaded programming is often required in aeronautical applications, even though it can cause safety and reliability concerns when conducted in the C programming language because of its low level nature. The JPL standard contains guidelines that help mitigate these issues.
+
+It is split into six levels of compliance, whereas the last two are excerpts from the MISRA-C:2004 standard. The first level describes language spec compliance, the second one focuses on predictable execution, defensive coding tactics are discussed in the third level, and the fourth level describes best-practices to ensure code clarity. Every level contains a certain amount of rules that have to be fulfilled to comply with the standard.
+
+Many rules specifically address characteristics of programs implemented in the C programming language.
+
+One of the main software design goals of this diploma thesis is to evaluate alternative programming languages that can circumvent certain rules by providing additional compile-time and run-time safety without heavily sacrificing performance while still providing deterministic operation timing.
+
+\section{Alternative languages characteristics}
+A set of characteristics was chosen that are desirable for an alternative implementation language. 
+
+\subsection{Garbage collection}
+Garbage collection is the practice of freeing inaccessible objects from memory automatically, instead of forcing the programmer to explicitly deallocate resources.
+
+The use of these systems is wide-spread, especially in scripting languages. They lower the entry barrier for new programmers and reduce cognitive load for existing ones. Sacrificing a fraction of overall processing time to the collection process is required but does not necessarily result in overall program slowdown. Matthew Hertz and Emery D. Berger have conducted comparisons between the performance of manual memory management and garbage collection in Java programs. They came to the conclusion that five times as much memory as required can lead to identical or slightly better runtime performance than that of manual memory management solutions \cite{garbage-collection-vs-manual}. 
+
+Garage collection has to be carried out at runtime but can be prepared at compile time. Compile time perpetration is performed through static code analysis. This approach is used extensively in the Apple software ecosystem. 
+
+Automatic Reference Counting, abbreviated as ARC, is a built-in feature of the Clang compiler and employs this technique. It is prominently used in Swift and Objective C. Reference count incrementation and decrementation instructions are inserted into object code during compile time. Reference cycles, which occur when an object directly or indirectly references itself, can not be handled by this approach because their reference count will never drop below 1. Deallocation is performed synchronously as soon as the reference count of an object hits 0. This behavior guarantees deterministic order and timing of cleanup operations, assuming no execution interruption by scheduling solutions in multi-process operating systems and cascading free operations. Hardware support for atomic integer incrementation and decrementation is vital to the overall performance of reference counting solutions in multi-threaded applications.
+
+The cleanup process in modern runtime only solutions is largely asynchronous. "Stop-the-world" stalls, during which program execution is completely halted, can still occur when the heap size becomes too large for the particular implementation to handle. Garbage is collected when the GC system considers it necessary. Runtime solutions have greater detection capabilities but can not ensure predictable cleanup timing because the collector is started automatically and stalls. Runtime collection can be used in tandem with manual memory.
+
+Manually managed solutions are traditionally preferred in mission critical applications because of the overhead garbage collection introduces in situations where memory is limited. Languages that do not require a garbage collector are therefore favored.
+
+\subsection{Official package manager}
+The quality of tooling available in a language ecosystem is largely determined by 
+
+\subsection{Documentation quality}
+The quality of tooling available in a language ecosystem is largely determined by 
+
+\subsection{Amount of breaking changes}
+
+
+\subsection{Existing experience}
+
+
+\subsection{ARM performance}
+
+
+\subsubsection{Go}
+\begin{description} 
+\item [Garbage collection] 
+Is garbage collected
+\item [Package management]
+\item [Platform independence] 
+
+\item [Cross compiling]
+ARM performance poor.
+
+\end{description}
+
+A set of compiled languages 
+
+imperative, non functional, no "stop the world" garbage collector, package management, straight forward build system in regards to cross-compilation
+
+Go, Rust, Swift, D, C++
+
+% go: has garbage collector, still taken into consideration because marketing material promises practically no pauses; lack of generics often cited concern but not relevant for rocket programming; package management tightly integrated with git, version pinning just recently; was not chosen because marketing claims about garbage collector were wrong, uses concurrent, tri-color, mark-sweep collector, an idea first proposed by Dijkstra in 1978 https://dl.acm.org/citation.cfm?id=359655; cross compiling supported in default toolchain
+
+% swift: uses ref counting for garbage collection -> only introduces deterministic delays; package manager introduced in 3.0; originally mac os exclusive, now supports linux; gui libraries not avaliable on linux, not important; cross compiling supported in default toolchain
+
+% rust: ownership model -> only one reference to resource; 
+
+% D: very similar goals to rust, tooling not even close; garbage collected by default, can be disabled
+
+% C++: same shit as C just with objects; no packaging ecosystem; cross compiling challenging with tools like cmake
+
+% Crystal: thrown into the mix because of its very pleasant syntax, very impressive, has not reached version 1 yet, breaking changes possible, slow release cycles
+
+Rust \cite{rust} is one of these languages and was chosen as the foundation of core software components for which reliability and stability is key because the restrictions it imposes on the programmer are very similar to the conventions set up by the NASA Jet Propulsion Laboratory. 
