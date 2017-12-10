@@ -13,34 +13,30 @@ Many rules specifically address characteristics of programs implemented in the C
 One of the main software design goals of this diploma thesis is to evaluate alternative programming languages that can circumvent certain rules by providing additional compile-time and run-time safety without heavily sacrificing performance while still providing deterministic operation timing.
 
 \section{Alternative languages characteristics}
-A set of characteristics was chosen that are desirable for an alternative implementation language. 
+A set of characteristics was chosen that is desirable for an alternative implementation language. 
 
 \subsection{Garbage collection}
-Garbage collection is the practice of freeing inaccessible objects from memory automatically, instead of forcing the programmer to explicitly deallocate resources.
+Garbage collection is the practice of freeing inaccessible heap objects from memory automatically, instead of forcing the programmer to explicitly deallocate resources.
 
-The use of these systems is wide-spread, especially in scripting languages. They lower the entry barrier for new programmers and reduce cognitive load for existing ones. Sacrificing a fraction of overall processing time to the collection process is required but does not necessarily result in overall program slowdown. Matthew Hertz and Emery D. Berger have conducted comparisons between the performance of manual memory management and garbage collection in Java programs. They came to the conclusion that five times as much memory as required can lead to identical or slightly better runtime performance than that of manual memory management solutions \cite{garbage-collection-vs-manual}. 
+The use of these systems is wide-spread, especially in scripting languages. They lower the entry barrier for new programmers and reduce cognitive load for existing ones. Sacrificing a fraction of overall processing time to the collection process is required but does not necessarily result in overall program slowdown. 
 
-Garage collection has to be carried out at runtime but can be prepared at compile time. Compile time perpetration is performed through static code analysis. This approach is used extensively in the Apple software ecosystem. 
+Matthew Hertz and Emery D. Berger have conducted comparisons between the performance of manual memory management and garbage collection in programs executed by the Java Virtual Machine. They came to the conclusion that five times as much memory as required can lead to identical or slightly better runtime performance than that of manual memory management solutions \cite{garbage-collection-vs-manual}. 
 
-Automatic Reference Counting, abbreviated as ARC, is a built-in feature of the Clang compiler and employs this technique. It is prominently used in Swift and Objective C. Reference count incrementation and decrementation instructions are inserted into object code during compile time. Reference cycles, which occur when an object directly or indirectly references itself, can not be handled by this approach because their reference count will never drop below 1. Deallocation is performed synchronously as soon as the reference count of an object hits 0. This behavior guarantees deterministic order and timing of cleanup operations, assuming no execution interruption by scheduling solutions in multi-process operating systems and cascading free operations. Hardware support for atomic integer incrementation and decrementation is vital to the overall performance of reference counting solutions in multi-threaded applications.
+Manually managed only solutions are traditionally preferred in mission critical applications because of the overhead garbage collection introduces in situations where memory is limited. Languages that do not require a garbage collector are therefore favored.
 
-The cleanup process in modern runtime only solutions is largely asynchronous. "Stop-the-world" stalls, during which program execution is completely halted, can still occur when the heap size becomes too large for the particular implementation to handle. Garbage is collected when the GC system considers it necessary. Runtime solutions have greater detection capabilities but can not ensure predictable cleanup timing because the collector is started automatically and stalls. Runtime collection can be used in tandem with manual memory.
+\subsection{Package manager}
+Package managers provide the ability to install, upgrade, configure, and remove software packages. They simplify dependency management and encourage the usage of existing packages that provide required functionality. 
 
-Manually managed solutions are traditionally preferred in mission critical applications because of the overhead garbage collection introduces in situations where memory is limited. Languages that do not require a garbage collector are therefore favored.
+Frictionless package management can lead to significantly higher overall code quality in a language ecosystem, because there is no need for constant reimplementation of functionality that is already present in existing packages. 
 
-\subsection{Official package manager}
-The quality of tooling available in a language ecosystem is largely determined by 
+"Dependency hell" is a phenomenon that can occur when package management is used too extensively. It describes the indirect dependence on different versions of the same library by two or more packages that are depended upon directly. This anomaly is handled by most modern package managers. 
 
 \subsection{Documentation quality}
-The quality of tooling available in a language ecosystem is largely determined by 
-
-\subsection{Amount of breaking changes}
+The documentation of the standard library 
 
 
 \subsection{Existing experience}
 
-
-\subsection{ARM performance}
 
 
 \subsubsection{Go}
