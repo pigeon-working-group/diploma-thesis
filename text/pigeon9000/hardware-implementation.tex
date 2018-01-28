@@ -69,15 +69,13 @@ With most mechanical components in-place the attention was shifted to the electr
 To control the electronic valve with a microcomputer later on, it was plugged into the normal close port of a relay which allows for programmatic switching of \SI{24}{\volt} power. 
 
 \subsection{Control components}
-Initially a Raspberry Pi Zero W \cite{raspberry-pi-zero-w} was chosen as the development board because it was assumed that a smaller form factor than a regular Pi would be beneficial. 
-The Pi Zero W utilizes an older ARMv6 processor than current models, which utilize ARMv7 chips. 
-The ability to cross-compile code was deemed essential early on. After many attempts at setting up a cross-compile toolchain for the Raspberry Pi Zero W failed because of the outdated processor architecture a Raspberry Pi 3 \cite{raspberry-pi-3} was used instead. 
+A Raspberry Pi Zero W \cite{raspberry-pi-zero-w} was chosen as the development board because it was assumed that a smaller form factor than a regular Pi would be beneficial. 
 
-Both development boards enable high and low level programming with short iteration cycles thanks to a full-fledged underlying operating system \cite{raspbian} with networking capabilities. Manipulation of the GPIO ports is well documented, I2C and SPI are supported with kernel command line flags and example code for most sensors is available on the internet.
+It enables high and low level programming with short iteration cycles thanks to a full-fledged underlying operating system \cite{raspbian} with networking capabilities. Manipulation of the GPIO ports is well documented, I2C and SPI are supported with kernel command line flags and example code for most sensors is available on the internet.
 
-Additionally, both boards did not have to be acquired because they were already available. 
+Additionally, the Zero W did not have to be acquired because it was already available. 
 
-An Arduino was decided against mainly because of the slower and less convenient development experience and the current lack of Rust \cite{rust} support, which is planned to be used as the projects low level language.
+An Arduino was decided against mainly because of the slower and less convenient development experience and the missing support of many major programming languages. 
 
 Before mounting the components onto the table they were tested individually. Once the functionality of each part was validated a demo application was written in Python to assess their combined functionality by switching the relay on and off. In the first dry run without a compressed air supply the valve emitted an audible click which gave the impression of a full switch operation happening inside the component.
 

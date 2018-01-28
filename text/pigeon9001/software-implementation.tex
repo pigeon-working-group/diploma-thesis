@@ -1,0 +1,20 @@
+\section{Software implementation}
+\author{Philip Trauner}
+
+\subsection{Toolchain setup}
+The development toolchain of the first prototype lacked the ability to cross-compile code for ARMv6 based microcomputers like the Raspberry Pi Zero W because integration efforts failed due to absence of pre-compiled ARMv6 cross-compilers in the Debian package repositories. After numerous tries of building a GCC version that targets ARMv6 were unsuccessful, a git repository by the Raspberry Pi Foundation was found that contained a complete ARMv6 toolchain.
+
+\subsection{Temporary demonstration software}
+A demonstration of the second prototype was scheduled to be shown at the open door day of Höhere Technische Bundes- Lehr- und Versuchsanstalt Wiener Neustadt. Hardware construction was largely finished at this point but 9001d was not yet capable of receiving control instructions. It was decided to create a temporary control solution that would make use of the linear slide based user interface located on the first prototype to control each valve of Pigeon 9001 separately. 
+
+Instead of implementing the temporary daemon in Rust, 9000d was translated to Python in an effort to quickly retrofit the ability to drive two valves in the existing control loop. This was done because neither scalability nor performance where a concern. To achieve this the state changes emitted by the controller client running on the the first prototype had to be modified to contain one "operation ratio" per valve. Additionally it was necessary to move the valve control logic into two separate threads that consume timing queues filled by the control loop. 
+
+\begin{figure}[h]
+\centering
+
+\includegraphics[width=155mm]{9001d_botch}
+
+\caption{Modified state of 9000d. "operation ratio" is replaced by a list of "operation ratios" to control the two valves of Pigeon 9001 separately.}
+\end{figure}
+
+The temporary solution achieved the required functionality and was promptly discarded afterwards.

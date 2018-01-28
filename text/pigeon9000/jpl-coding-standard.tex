@@ -1,4 +1,6 @@
-\section{The JPL Institutional Coding Standard}
+\section{JPL Institutional Coding Standard for the C Programming Language}
+\author{Philip Trauner}
+
 In 2009, after approximately 75 years of activity in the aerospace and rocket science field, JPL published a previously internal set of rules regarding the implementation of embedded mission critical code in the C programming language. 
 
 \subsection{Contents}
@@ -10,12 +12,14 @@ It is split into six levels of compliance, whereas the last two are excerpts fro
 
 Many rules specifically address characteristics of programs implemented in the C programming language.
 
-One of the main software design goals of this diploma thesis is to evaluate alternative programming languages that can circumvent certain rules by providing additional compile-time and run-time safety without heavily sacrificing performance while still providing deterministic operation timing.
+\subsection{Project goal}
+One of the main software design goals of this diploma thesis is to evaluate alternative programming languages that can circumvent certain rules by offering additional compile-time and run-time safety without heavily sacrificing performance while still providing deterministic operation timing.
 
-\section{Alternative languages characteristics}
-A set of characteristics was chosen that is desirable for an alternative implementation language. 
+\section{Alternative languages}
+\subsection{Characteristics}
+A set of characteristics was chosen that is desirable for an alternative implementation language. Support for ARMv6, the processor architecture of the Broadcom BCM2835 chip on the Raspberry Pi Zero W, is required.
 
-\subsection{Garbage collection}
+\subsubsection{Garbage collection}
 Garbage collection is the practice of freeing inaccessible heap objects from memory automatically, instead of forcing the programmer to explicitly deallocate resources.
 
 The use of these systems is wide-spread, especially in scripting languages. They lower the entry barrier for new programmers and reduce cognitive load for existing ones. Sacrificing a fraction of overall processing time to the collection process is required but does not necessarily result in overall program slowdown. 
@@ -24,49 +28,71 @@ Matthew Hertz and Emery D. Berger have conducted comparisons between the perform
 
 Manually managed only solutions are traditionally preferred in mission critical applications because of the overhead garbage collection introduces in situations where memory is limited. Languages that do not require a garbage collector are therefore favored.
 
-\subsection{Package manager}
-Package managers provide the ability to install, upgrade, configure, and remove software packages. They simplify dependency management and encourage the usage of existing packages that provide required functionality. 
+\subsubsection{C interoperability}
+While the goal of this diploma thesis is to actively avoid C, it is often necessary to interface with existing C code. The reimplementation of closed source libraries or vast existing code-bases is out of the scope of this project, so a stable and widely adopted way of using or generating C bindings is required.
+
+\subsubsection{Official package manager}
+Package managers provide the ability to install, upgrade, configure, and remove software packages. They simplify dependency management and encourage the usage of existing libraries that provide required functionality. 
 
 Frictionless package management can lead to significantly higher overall code quality in a language ecosystem, because there is no need for constant reimplementation of functionality that is already present in existing packages. 
 
-"Dependency hell" is a phenomenon that can occur when package management is used too extensively. It describes the indirect dependence on different versions of the same library by two or more packages that are depended upon directly. This anomaly is handled by most modern package managers. 
+Languages with an official package management solution are preferred.
 
-\subsection{Documentation quality}
-The documentation of the standard library 
+\subsection{Programming languages} % https://insights.stackoverflow.com/survey/2017
+A set of languages that compile to machine code was chosen based on the "Most Popular" and "Most Loved, Dreaded, and Wanted" categories of the 2017 Stack Overflow Developer Survey.
 
+Interpreted languages were not considered because they are not fit for performant low level operation without calling into compiled code.
 
-\subsection{Existing experience}
-
-
+Purely functional programming languages were not included because of lacking experience.
 
 \subsubsection{Go}
+Go was created by Rob Pike, Ken Thompson, and Robert Griesemer while working at Google. It is an open source programming language with the goal of being able to scale to large systems while remaining readable and maintainable. It positions itself as an alternative to C++ or Java. 
+Version 1.0 was released in March 2012.
 \begin{description} 
-\item [Garbage collection] 
-Is garbage collected
-\item [Package management]
-\item [Platform independence] 
-
-\item [Cross compiling]
-ARM performance poor.
-
+\item [Garbage collection]
+Go is a garbage collected language. The GC implementation is optimized for very low pause times at the expense of execution performance. 
+\item [C interoperability] % https://golang.org/cmd/cgo/
+cgo is the official way of creating Go packages that call C code. It is not intended to be used in tandem with the built-in cross compilation feature of the Go compiler as it is automatically disabled when cross-compiling.
+\item [Official package manager] % https://github.com/golang/dep
+There is currently no official package manager included in the standard Go tool-chain. dep, which is an experimental dependency manager that is intended to become the official tool once version 1.0 is reached, is the most widely used solution. cgo support is not implemented yet.
 \end{description}
 
-A set of compiled languages 
+\subsubsection{Rust}
+Development of Rust started in 2006, initially as a personal project of Mozilla employee Graydon Hoare. Mozilla started sponsoring the project in 2009 in an effort to replace Gecko, the aging browser engine of Firefox. Rust describes itself as an open source systems programming language with a focus on speed, safety, and concurrency. 
+Version 1.0 was released in May 2015.
+\begin{description} 
+\item [Garbage collection]
+Rust enforces memory safety through a system of ownership that is validated at compile time. Reference counting is used if shared ownership is required.
+\item [C interoperability] % https://github.com/rust-lang-nursery/rust-bindgen
+bindgen automatically generates bindings to C and C++ code during compile time. Cross-compilation is supported.
+\item [Official package manager]
+Cargo is Rust's official package manager and build system. It natively supports a variety of target architectures.
+\end{description}
 
-imperative, non functional, no "stop the world" garbage collector, package management, straight forward build system in regards to cross-compilation
+\subsubsection{Swift}
+Swift development was initially started by Chris Lattner at Apple in 2010. It is meant to co-exist with Objective-C, Apple's previous implementation language of choice, while providing a more readable syntax and pointer-less memory management. In December 2015 Swift was open-sourced and gained Linux support. Version 1.0 is largely obsolete as a major revision is published approximately once every year. 
+4.0, which is the current version, was released in September 2017. 
+\begin{description} 
+\item [Garbage collection]
+Swift uses Automatic Reference Counting instead of a tracing garbage collector. Reference count incrementation and decrementation instructions are inserted into object code at compile-time. Execution pauses are circumvented by this technique, but overall program slowdown due to the reference count management overhead is incurred.
+\item [C interoperability]
+C interoperability is built into the language itself.
+\item [Official package manager]
+Swift Package Manager is the official package management solution. It started shipping with the default tool-chain with the release of Swift 3.0.
+\end{description}
 
-Go, Rust, Swift, D, C++
+\subsubsection{C++}
+Development of C++ was initiated by Bjarne Stroustrup in 1979. It is an object oriented systems programming language with a focus on efficiency, flexibility, and performance. C++ is still actively being maintained and improved.
+\begin{description} 
+\item [Garbage collection] 
+Manual memory management is the most widespread way of deallocating resources in C++. Shared pointers can be used for automatic memory management.
+\item [C interoperability]
+C interoperability is built into the language itself.
+\item [Official package manager]
+There is no official C++ package manager.  
+\end{description}
 
-% go: has garbage collector, still taken into consideration because marketing material promises practically no pauses; lack of generics often cited concern but not relevant for rocket programming; package management tightly integrated with git, version pinning just recently; was not chosen because marketing claims about garbage collector were wrong, uses concurrent, tri-color, mark-sweep collector, an idea first proposed by Dijkstra in 1978 https://dl.acm.org/citation.cfm?id=359655; cross compiling supported in default toolchain
+\subsection{Decision}
+Rust was ultimately decided on as the implementation language for the first prototype because it closely matched the wanted language characteristics.
 
-% swift: uses ref counting for garbage collection -> only introduces deterministic delays; package manager introduced in 3.0; originally mac os exclusive, now supports linux; gui libraries not avaliable on linux, not important; cross compiling supported in default toolchain
-
-% rust: ownership model -> only one reference to resource; 
-
-% D: very similar goals to rust, tooling not even close; garbage collected by default, can be disabled
-
-% C++: same shit as C just with objects; no packaging ecosystem; cross compiling challenging with tools like cmake
-
-% Crystal: thrown into the mix because of its very pleasant syntax, very impressive, has not reached version 1 yet, breaking changes possible, slow release cycles
-
-Rust \cite{rust} is one of these languages and was chosen as the foundation of core software components for which reliability and stability is key because the restrictions it imposes on the programmer are very similar to the conventions set up by the NASA Jet Propulsion Laboratory. 
+Rust offers two release channels, that are deemed unstable, to provide faster access to new features. Some libraries depend on these unreleased features and will not compile without them. It was decided that stability is more important than the extended feature-set and therefor only the stable branch will be used.

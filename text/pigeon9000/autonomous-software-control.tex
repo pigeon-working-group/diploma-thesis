@@ -20,7 +20,7 @@ Instead of calculating "operation time" and "release time" in the controller app
 To mitigate different light conditions a sensor conditioning stage had to be implemented. Before powering on the valve the top-hat sensor values are observed for three seconds. The trigger value is calculated by reducing the lowest value by 10\%.
 \begin{figure}[h]
 \begin{align*}
-    tv &=min\{v_1, \dots, v_n\} * 0.1 && \text{Trigger value} \\
+    tv &=min\{v_1, \dots, v_n\} * (1.0 - 0.1) && \text{Trigger value} \\
     v &= \text{Obtained sensor value}
 \end{align*}
 \caption{Formula used in the top-hat trigger value conditioning stage.}

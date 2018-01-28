@@ -1,0 +1,61 @@
+\section{Difficulties of Rocket Propulsion and Spaceflight}
+\author{Sebastian Schaffler} 
+
+Todays space launch vehicles do not only analyze and evaluate thousands of sensor values in real time, recalculate their trajectories in flight many times and decide which actions to perform in the next few milliseconds and seconds in order to fulfill their mission reliably and safely, but they also have deal with all the basic physical stumbling blocks, that are naturally inherent to their complexity and nature of purpose. Because of this it is quite obvious that the recent achievements in Rocket landing abilities are only possible because of the incredible advancement in computing technologies that has occurred over the past 20 years. 
+
+The simplest form of rockets commonly encountered today, are fireworks. Simple solid propellant tubes that counter the downwards acceleration of the earths gravity by generating upward thrust. The same can be said for model rockets, as they are essentially the same. Those simple devices however lack the ability of controlling their flightpath which is generally not necessary for those short duration flights, however very much needed for rockets intended to cross the Kármán line, which is the generally acknowledged end of earths atmosphere and lies at \SI{100}{\kilo\meter} altitude. To reach this altitude the rocket is required to compensate for wind sheer and keep its own body upright, which resembles balancing an upside down pendulum. The need for the ability to steer is one of the reasons 'rocket science' has become a synonym for something overly complex, the other being, the faster a rocket intends to go the bigger it has to be. That is because it requires more propellant, but to carry more propellant, it again needs more because it becomes heavier, therefore the size grows exponentially. To achieve orbit a rocket has to first get out of the atmosphere, and carry enough fuel with it to accelerate to approximately \SI{8}{\kilo\meter\per\second}, hence the size and amount of capital needed. These facts clarify why orbital spaceflight has only be achieved by a handful of government agencies and dedicated companies.
+
+% hobby rocketry not too hard
+% scaling up to suborbital, hard but doable for "amatures"
+% scaling up to orbital, exponential growth of komplexity and sheer size, only very few governments and companies able to pull off
+%examples from history: 
+%abericans saw the need for nasa, esa, creation of roscosmos, other space agencies, only few countries, extreme expenses
+% only recently, only giantic kapiatal bearing companies entered
+
+\subsection{Physical fundamentals of Rocket Propulsion}
+
+Rockets behave according to Newton's laws of motion. Their engines specifically rely on the second and third of them. The second law of motion states that a force is the product of mass times acceleration, and the third one that for every force there is an equal force pointing in the opposite direction. 
+
+The way a rocket is increasing its velocity is by accelerating and expelling exhaust gases, which have a high velocity, temperature and pressure, into the opposite direction it is supposed to travel, therefore creating a force out the back of the vehicle. This in turn creates a force pointing forward which drives the vehicle in that direction.
+
+The ejection of exhaust gases also has the added benefit of making the vehicle lighter as propellant gets used up. This means that at the beginning of the flight the rocket uses a lot of its force to push its own mass along but towards the end of the powered flight almost all of the thrust produces velocity.
+This interaction between thrust and propellant usage is described by the Tsiolkovsky rocket equation which calculates the total change of velocity that a rocket can theoretically achieve.
+
+\begin{figure}
+$\Delta v=v_{\text{e}}\ln {\frac {m_{0}}{m_{f}}}$
+
+\caption{no}
+\end{figure}
+
+When flying through the atmosphere you loose a lot of velocity to friction, which is the reason why rockets almost always start vertically to quickly gain altitude.
+
+For a rocket to successfully complete its mission the second key aspect is control. This is usually achieved by creating an angular offset between the center of thrust and the center of mass, inducing a torque around the center of mass.
+
+% rocket equation
+% engine design
+% komplexity
+
+%\subsection{Suborbital vs. Orbital}
+
+% a little bit of orbital mechanics
+% terefore resulting huge difference
+% the need of at least 2 stages
+
+\section{Difficulties of Vertical Landing}
+
+\subsection{Physical fundamentals of Vertical Landing}
+
+% interfering  facors, upside down pendulum
+% trajectorieas
+% landingpads/mounts
+
+\subsection{Hardware Problems of Vertical Landing}
+
+This rules out the use of simple solid propellant engines since they are unable to shut down on demand, and hardly steerable. The most reasonable approach for a highly steerable engine is liquid fuel as it can be supplied in required quantity and pressure. But these advantages add a significant amount of complexity especially since the chamber pressure of a rocket engine is supposed to as high as possible but building tanks to withstand the same pressure would weigh the vehicle down immensely. To supply the propellants at the required pressure usually a turbo-pump is build in the fuel system. These pumps spin at very high speeds and are mostly driven by burning a small portion of the fuel. They also introduce a lot of complexity to the engine. Another needed capability that raises the complexity level is directable thrust, or gimbaling. This is often achieved via hydraulic actuators which are able to swivel the chamber of the engine and therefore create a misalignment of thrust and center of mass, which in turn creates a torque around the center of mass. The combustion contained in the engine camber also produces a very high temperature, which can only be withstood by actively cooling all components that come in touch with it.
+
+% fast reacting gimbals or directional thrusters
+% aerodynamc steering surfaces, supersonic
+
+\subsection{Software Problems of Vertical Landing}
+
+% constant recalculation of position, attitude and trajectory due to interferences

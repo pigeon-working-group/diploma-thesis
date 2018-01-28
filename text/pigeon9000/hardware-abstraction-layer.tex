@@ -36,12 +36,50 @@ rust-sysfs-gpio \cite{rust-sysfs-gpio} was selected as the GPIO library because 
 rppal \cite{rppal} was then chosen as the GPIO read/write solution because it was the only other well documented library that was still being maintained and uses direct memory writes to access the pins.
 
 
-\subsection{Advanced software control}
+\section{Advanced software control}
+\subsection{Concept}
 Mission Control like facilities have the ability to correct the state of a rocket during flight by communicating with core components over predefined protocols. To allow for fast experimentation it was determined that this approach would be adopted for the first prototype.
 
 A client/server architecture, networked over the Transmission Control Protocol, was chosen to accomplish this design goal because the hardware setup guarantees that a stable Ethernet connection is present at all times. Additionally, client software can also be executed on the same microcomputer that the server is running on.
 
-The server is modeled after the Unix daemon concept and is therefor named pigeond. It is implemented in Rust. The client is referred to as controller and can be written in any programming language that supports sockets, however Python is used exclusively because its robust standard library allows for quick iteration and experimentation.
+\subsection{Toolchain setup}
+The additional compiler complexity introduced by the borrow checker and the current omission of incremental compilation is known to cause significantly slower Rust compile times in comparison to similar languages. This led to the decision to forgo compiling code directly on the Raspberry Pi Zero W, because it was assumed that the incurred slowdown would negatively impact development speed, therefor a cross-compilation toolchain had to be utilized.
+
+Rust's standard library relies on the C standard library to access operating system functionality, therefor a linker is required to generate executables or libraries. Instead of bundling a linker in the default toolchain, Rust chooses to depend on an external one, in most cases the linker included with the operating system. These often only support the processor architecture of the computer they are executed on and can therefor not be used for other architectures, hence the need for target specific linkers.
+
+The main development platform of this diploma thesis is macOS. Due to fact that owning a Mac is legally necessary to run this largely proprietary operating system it was decided against implementing the toolchain on top of it and instead provide documentation and setup scripts for Linux-based operating systems which could then be virtualized on unsupported hosts. 
+
+VirtualBox was chosen as the recommended virtualization software because it is free for personal use and available on most major operating systems. Folder sharing is utilized to pass the project folder through to the guest and the ability to forward ports is used to expose Secure Shell to the host.
+
+Debian 9 "Stretch" was selected as the recommended Linux distribution because of existing experience with the packaging ecosystem and the assumption that the pre-built toolchains, that are available through the default software repositories, would produce binaries that can be executed on ARMv6 based machines. Cargo, Rust’s Package Manager, was therefor configured to use the linker found in the "crossbuild-essential-armhf" package.
+
+The ability to execute a pre-defined command when connecting to a SSH server is used to redirect the standard output streams of the Linux guest system to unsupported hosts. This allows for seamless integration into the host terminal. Secure Copy is used to transfer the generated binaries to the target platform.
+
+Commonly used commands are defined as Makefile targets and environment variables are used for configuration.
+
+\begin{figure}[h]
+\begin{minted}{make}
+all: build transfer
+
+.PHONY: build
+build:
+	ssh $(VM_USER)@$(VM_ADDRESS) -p $(VM_PORT) \
+		'source ~/.profile && \
+		cd $(VM_PROJECT_LOCATION) && \
+		cargo build --target=arm-unknown-linux-gnueabihf'
+
+.PHONY: transfer
+transfer:
+	scp target/arm-unknown-linux-gnueabihf/debug/9000d \
+	$(TARGET_USER)@$(TARGET_ADDRESS):$(TARGET_BIN_LOCATION)
+\end{minted}
+\caption{Shortened version of Makefile based cross-compilation solution. The "build" target is used to cross-compile code on a Linux-based operating system. The "transfer" target is used to transfer the generated binaries onto a target system.}
+\end{figure}
+
+Compilation and transmission of the generated binaries to the Raspberry Pi Zero W was now possible through the invocation of "make all" on a macOS system, however executing the binaries on the Pi always resulted in a segmentation fault. After lengthy investigation it was discovered that the toolchain provided by Debian only supports ARMv7 targets. This led to the decision to migrate to a Raspberry Pi 3 Model B, which utilizes an ARMv7 processor, because one was already available and reevaluate ARMv6 support once it was required.
+
+\subsection{Implementation}
+The server is modeled after the Unix daemon concept and is therefor named 9000d. It is implemented in Rust. The client is referred to as controller and can be written in any programming language that supports sockets, however Python is used exclusively because its robust standard library allows for quick iteration and experimentation.
 
 The thrust generated by the valve can be controlled by sending a state to the daemon. A state contains the "operation time" and the "release time", which are time-spans defined in milliseconds. These values are used to perform pulse-width modulation on the valve. PWM is handled in software instead of utilizing the hardware PWM ports on the Raspberry Pi 3 Model B because those can only be configured over sysfs, which does not guarantee deterministic timing. Additionally, a power flag is present which indicates if the valve should be controlled at all. States are formatted in JSON \cite{json} because of its broad availability across many programming languages. It is represented as human readable text instead of binary messages, which is useful for debugging purposes. 
 
@@ -63,9 +101,9 @@ To test the daemon/controller approach dictated by the software architecture it 
 \subsection{Basic}
 Instead of directly approaching autonomous rocket control it was decided to experiment with physical user interfaces first. This approach was chosen to test the practicality of the software design and to provide a version that can be used for demonstrations with human interaction. 
 
-A rotary encoder \cite{rotary-encoder} combined with a button was intended as the physical interface of this prototype version because it did not require an analog to digital converter, which would have had to be acquired. After some experimentation with the component it began emitting nonsensical values. This interpreted as a component failure. 
+A rotary encoder \cite{rotary-encoder} combined with a button was intended as the physical interface of this prototype version because it did not require an analog to digital converter, which would have had to be acquired. After some experimentation with the component it began emitting nonsensical values. This was interpreted as a component failure. 
 
-A linear slide was then chosen to directly control the thrust generated by the valve. To determine the slide position an analog to digital converter was now necessary. A MCP3008 \cite{mcp3008} was chosen because a library \cite{mcp3008-library} to interact with its 8 input channels was already available. 
+A linear slide was then chosen to directly control the thrust generated by the valve. To determine the slide position an analog to digital converter was now necessary. A MCP3008 \cite{mcp3008} was chosen because a Python library \cite{mcp3008-library} to interact with its 8 input channels was already available. 
 
 To obtain a millisecond value from the linear slide its position is converted to a percentage based against the full slide length and then multiplied by a constant timespan of \SI{100}{\milli\second}. The button is used to alternate between "operation time" and "release time" mode. 
 
