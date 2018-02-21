@@ -1,9 +1,9 @@
 \section{Difficulties of Rocket Propulsion and Spaceflight}
 \author{Sebastian Schaffler} 
 
-Todays space launch vehicles do not only analyze and evaluate thousands of sensor values in real time, recalculate their trajectories in flight many times and decide which actions to perform in the next few milliseconds and seconds in order to fulfill their mission reliably and safely, but they also have deal with all the basic physical stumbling blocks, that are naturally inherent to their complexity and nature of purpose. Because of this it is quite obvious that the recent achievements in Rocket landing abilities are only possible because of the incredible advancement in computing technologies that has occurred over the past 20 years. 
+Todays space launch vehicles do not only analyze and evaluate thousands of sensor values in real time, recalculate their trajectories in flight many times and decide which actions to perform in the next few milliseconds and seconds in order to fulfill their mission reliably and safely, but they also have to deal with all the basic physical stumbling blocks, that are naturally inherent to their complexity and nature of purpose. Because of this it is quite obvious that the recent achievements in Rocket landing abilities are only possible because of the incredible advancement in computing technologies that has occurred over the past 20 years. 
 
-The simplest form of rockets commonly encountered today, are fireworks. Simple solid propellant tubes that counter the downwards acceleration of the earths gravity by generating upward thrust. The same can be said for model rockets, as they are essentially the same. Those simple devices however lack the ability of controlling their flightpath which is generally not necessary for those short duration flights, however very much needed for rockets intended to cross the Kármán line, which is the generally acknowledged end of earths atmosphere and lies at \SI{100}{\kilo\meter} altitude. To reach this altitude the rocket is required to compensate for wind sheer and keep its own body upright, which resembles balancing an upside down pendulum. The need for the ability to steer is one of the reasons 'rocket science' has become a synonym for something overly complex, the other being, the faster a rocket intends to go the bigger it has to be. That is because it requires more propellant, but to carry more propellant, it again needs more because it becomes heavier, therefore the size grows exponentially. To achieve orbit a rocket has to first get out of the atmosphere, and carry enough fuel with it to accelerate to approximately \SI{8}{\kilo\meter\per\second}, hence the size and amount of capital needed. These facts clarify why orbital spaceflight has only be achieved by a handful of government agencies and dedicated companies.
+The simplest form of rockets commonly encountered today, are fireworks. Simple solid propellant tubes that counter the downwards acceleration of the earths gravity by generating upward thrust. The same can be said for model rockets, as they are essentially the same. Those simple devices however lack the ability of controlling their flightpath which is generally not necessary for those short duration flights, however very much needed for rockets intended to cross the Kármán line, which is the generally acknowledged end of earths atmosphere and lies at \SI{100}{\kilo\meter} altitude. To reach this altitude the rocket is required to compensate for wind sheer and keep its own body upright, which resembles balancing an upside down pendulum. The need for the ability to steer is one of the reasons 'rocket science' has become a synonym for something overly complex, the other being, the faster a rocket intends to go the bigger it has to be. That is because it requires more propellant, but to carry more propellant, it again needs more because it becomes heavier, therefore the size grows exponentially. To achieve orbit a rocket has to first get out of the atmosphere, and carry enough fuel with it to accelerate to approximately \SI{7.8}{\kilo\meter\per\second}, hence the size and amount of capital needed. These facts clarify why orbital spaceflight has only been achieved by a handful of government agencies and dedicated companies.
 
 % hobby rocketry not too hard
 % scaling up to suborbital, hard but doable for "amatures"
@@ -21,15 +21,24 @@ The way a rocket is increasing its velocity is by accelerating and expelling exh
 The ejection of exhaust gases also has the added benefit of making the vehicle lighter as propellant gets used up. This means that at the beginning of the flight the rocket uses a lot of its force to push its own mass along but towards the end of the powered flight almost all of the thrust produces velocity.
 This interaction between thrust and propellant usage is described by the Tsiolkovsky rocket equation which calculates the total change of velocity that a rocket can theoretically achieve.
 
-\begin{figure}
-$\Delta v=v_{\text{e}}\ln {\frac {m_{0}}{m_{f}}}$
-
-\caption{no}
+\begin{figure}[h]
+\begin{align*}
+\Delta v=v_{e}\ln {\frac {m_{f}}{m_{e}}}
+\end{align*}
+\begin{align*}
+\Delta v &= \text{possible change in velocity} & v_{e} &= \text{effective exhaust velocity} \\
+m_{f} &= \text{mass when fully fueled} & m_{e} &= \text{mass when the tanks are empty}
+\end{align*}
+\caption{The Tsiolkovsky Rocket Equation or Ideal Rocket Equation calculates the the change of velocity a vehicle is capable of with its dry mass, fueled mass and its engine characteristics. $v_{e}$ is the engine's effective exhaust velocity $I_{sp}*g_{0}$ or specific impulse measured in \si[per-mode = fraction]{\meter\per\second}. $I_{sp}$ is the specific impulse of the engine measured in \si{\second} and describes the thrust of the engine for a given amount of fuel. $g_{0}$ is the standard gravity constant \SI[per-mode = fraction]{9.80665}{\meter\per\second\squared}}
 \end{figure}
 
-When flying through the atmosphere you loose a lot of velocity to friction, which is the reason why rockets almost always start vertically to quickly gain altitude.
+When flying through the atmosphere you loose a lot of velocity to friction, which is the reason why rockets almost always start vertically. This way the vehicle gains altitude quickly and then turns sideways to achieve the needed horizontal velocity.
 
-For a rocket to successfully complete its mission the second key aspect is control. This is usually achieved by creating an angular offset between the center of thrust and the center of mass, inducing a torque around the center of mass.
+For a rocket to successfully complete its mission the second key aspect is control. During powered flight, which means while the main engines are turned on, control authority is usually achieved by creating an angular offset between the center of thrust and the center of mass, inducing a torque around the center of mass. When the spacecraft is traveling through the vacuum of space without thrust from the main engine there are two kinds of movement that need to be controlled, generally the more important of which is attitude. This consists of pitch, yaw and roll and describes the crafts rotation around the three axis. Lateral movement is only important in station keeping, that is ensuring the craft stays in its intended orbit, and when rendezvousing with another craft. These two types of control are almost always achieved via a reaction control system, for short RCS. Such a system consists of an arrangement of thrusters mounted tangentially, approximately symmetrical around the expected center of mass on the hull of the spacecraft. This way the RCS system is able to provide thrust either symmetrically or unsymmetrically around the center of mass, therefore resulting in either lateral or rotational movement.
+
+%----!
+%skizze!
+%----!
 
 % rocket equation
 % engine design
@@ -46,7 +55,7 @@ For a rocket to successfully complete its mission the second key aspect is contr
 \subsection{Physical fundamentals of Vertical Landing}
 
 % interfering  facors, upside down pendulum
-% trajectorieas
+% trajectories
 % landingpads/mounts
 
 \subsection{Hardware Problems of Vertical Landing}
