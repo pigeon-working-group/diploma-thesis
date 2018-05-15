@@ -28,3 +28,11 @@ quick_paper.pdf
 *.out
 *.synctex.gz
 _minted-*
+*final-paper*
+*final_paper*
+*.db
+images_*
+*.pxm
+*.xml
+*.bcf
+*blx.bib
