@@ -56,7 +56,7 @@
 \RequirePackage[T1]{fontenc}
 
 \RequirePackage{ifthen}
-\RequirePackage[english,german,ngerman]{babel}
+\RequirePackage[english,ngerman]{babel}
 
 \RequirePackage{eurosym} % provides \euro - conflict with marvosym on \EUR!
 %\RequirePackage{marvosym} % provides \EUR and other unusual symbols!
@@ -74,7 +74,7 @@
 \ifthenelse{\equal{\htl@MainLanguage}{english}}%
 	{\main@language{english}}{}
 	
-\RequirePackage[fixlanguage]{babelbib}
+%\RequirePackage[fixlanguage]{babelbib}
 %\RequirePackage{natbib}
 
 \RequirePackage[dvips]{graphicx} % zur Einbindung von EPS-Grafiken
@@ -488,6 +488,7 @@ keepspaces=true,%
 \newcommand{\htl@GetDateYear}{\getdateyear{htl@date}}
 \newcommand{\htl@DisplayDate}{\displaydate{htl@date}}
 
+
 \newdateformat{germandateformat}{\THEDAY{. }\monthname[\THEMONTH] \THEYEAR}
 
 
@@ -508,7 +509,7 @@ keepspaces=true,%
 \RequirePackage[novbox]{pdfsync} % notwendig für inverse Suche aus dem PDF viewer
 % novbox Option verhindert Konflikt u.a. mit array-Package
 
-\RequirePackage[noadjust]{cite} % vermeidet zusätzliches Spacing vor [..]
+% \RequirePackage[noadjust]{cite} % vermeidet zusätzliches Spacing vor [..]
 
 \RequirePackage{ifpdf}
 \ifpdf % LaTeX is in native PDF mode (pdflatex) 

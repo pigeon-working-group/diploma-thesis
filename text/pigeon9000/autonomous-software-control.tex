@@ -1,14 +1,14 @@
-\section{Autonomous software control}
-\author{Philip Trauner}
+\section{Autonomous Software Control}
+\author{Sebasian Schaffler}
 
-After the manual solution to hover control showed promise, work on an automatic version began. Initially it was planned to utilize a pressure sensor to calculate the required thrust based on the available pressure. This idea had to be discarded because the cost of a customary pressure sensor was deemed too high at this stage in development, instead a pair of regular top-hats, which are infrared reflection sensors, were used as a light barrier to get started. The A/D converter previously acquired for the basic physical user interface was utilized to obtain readings from the sensors.
+After the manual solution to hover control showed promise, work on an automatic version began. Initially it was planned to utilize a pressure sensor to calculate the required thrust based on the available pressure. This idea had to be discarded because the cost of a customary pressure sensor was deemed too high at this stage in development. Instead a pair of regular top-hats, which are infrared reflection sensors, were used as a light barrier to get started. The A/D converter previously acquired for the basic physical user interface was utilized to obtain readings from the sensors.
 
 A hardware modification was necessary for the corpus to be detectable by the infrared sensors because it did not create a significant enough value spike to reliably determine if it had passed by the top-hats.
 A piece of white paper was therefor attached to the side of the corpus facing the sensors. This resulted in a observable value rise and solved the detection issue.
 
 Instead of calculating "operation time" and "release time" in the controller applications it was decided to move this computation into the daemon because direct timespan manipulation was not utilized. "operation time" and "release time" were therefor replaced by "cycle time" and "operation ratio".
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 
 \includegraphics[width=150mm]{state_v2}
@@ -16,9 +16,10 @@ Instead of calculating "operation time" and "release time" in the controller app
 \caption{States now contains "cycle time" and "operation time" instead of "operation time" and "release time" because direct timespan manipulation was not utilized.}
 \end{figure}
 
-\subsection{Sensor conditioning}
-To mitigate different light conditions a sensor conditioning stage had to be implemented. Before powering on the valve the top-hat sensor values are observed for three seconds. The trigger value is calculated by reducing the lowest value by 10\%.
-\begin{figure}[h]
+\subsection{Sensor Conditioning}
+To mitigate different light conditions a sensor conditioning stage had to be implemented. Before powering on the valve, the top-hat sensor values are observed for three seconds. The trigger value is calculated by reducing the lowest value by 10\%.
+
+\begin{figure}[H]
 \begin{align*}
     tv &=min\{v_1, \dots, v_n\} * (1.0 - 0.1) && \text{Trigger value} \\
     v &= \text{Obtained sensor value}
@@ -26,21 +27,21 @@ To mitigate different light conditions a sensor conditioning stage had to be imp
 \caption{Formula used in the top-hat trigger value conditioning stage.}
 \end{figure}
 
-\subsection{Self validation}
-To validate if the corpus is properly detected by the top-hats the valve is opened until both sensors have observed the previously calculated trigger value. If a sensor doesn't trigger in a five second grace period, program execution is interrupted and correct behavior of the valve as well as the sensors has to be confirmed manually.
+\subsection{Self Validation}
+To validate if the corpus is properly detected by the top-hats the valve is opened until both sensors have observed the previously calculated trigger value. If a sensor does not trigger within a five second grace period, program execution is interrupted and correct behavior of the valve as well as the sensors has to be confirmed manually.
 
 If self validation succeeds, the corpus is at the highest possible point on the table leg.
 
 \subsection{Hovering}
 Initially it was decided that the two infrared sensors should by utilized as boundaries for the hovering location because it was assumed that pressure inconsistencies would require an upper bound to prevent situations in which the thrust changes would cause the corpus to ascend too far. 
 At the beginning of the hovering stage the thrust level would be adjusted to a level that would lead to a descend of the corpus. This descend should be slow enough for the corpus to spend enough time in front of the sensors to allow for thrust modifications.
-These modifications would occur whenever the corpus trigged a top-hat. While the lower barrier was triggered the thrust would be increased and the opposite would happen for the upper bound. After the initial trigger of the upper infrared sensor it was assumed the corpus was in the designated hover area and the thrust would remained unchanged until further modifications were required.
+These modifications would occur whenever the corpus triggered a top-hat. While the lower barrier was triggered the thrust would be increased and the opposite would happen for the upper bound. After the initial trigger of the upper infrared sensor it was assumed the corpus was in the designated hover area and the thrust would remained unchanged until further modifications were required.
 
 During the implementation of this idea it became apparent that the precise thrust corrections happening at the lower sensor would never cause the corpus to rise above the upper barrier, thus rendering it ineffective. It was decided that the upper sensor would be ignored until a different use-case for it would arise. This change altered the procedure to simply decrease the thrust until the lower sensor was set off and to increase it while the top-hat was triggered.
 
-To gradually modify the thrust by a set percentage per second, delta time was introduced into the calculation. This concept is primarily utilized in games \cite{delta-time} programming to combat varying execution speed and still guarantee deterministic physics, but can also be applied to control loops that interact with network resources with inherent access latency.  
+To gradually modify the thrust by a set percentage per second, delta time was introduced into the calculation. This concept is primarily utilized in games \cite{delta-time} programming to combat varying execution speed while still guaranteeing deterministic physics, but can also be applied to control loops that interact with network resources with inherent access latency.  
 
-\begin{figure}[h]
+\begin{figure}[H]
 \begin{minted}{python}
 # Fixed cycle time
 CYCLE_TIME = 50

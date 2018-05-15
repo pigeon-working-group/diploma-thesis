@@ -179,7 +179,6 @@ der HTL Wiener Neustadt]
 }
 
 %------------------ Titelseite -------------------
-
 \newcommand{\@datitel}{%
 \begin{titlepage}%
 	\begin{center}%
@@ -277,10 +276,11 @@ Quellen und Hilfsmittel nicht benutzt und die den benutzten Quellen wörtlich un
 {\large\bf Verfasser / Verfasserinnen:} 
     \begin{tabbing}
     \hspace*{7cm}\=\hspace*{7cm}\= \kill
-    	\\
-    	\\
-    	\\
-    	\\
+    	\hspace{9pt}
+      \includegraphics[width=30mm]{schaffler}
+      \>
+      \includegraphics[width=30mm]{trauner}
+      \\
     	\@schuelerA \> \@schuelerB \\
     	\\ 
     	\\
@@ -315,7 +315,6 @@ Quellen und Hilfsmittel nicht benutzt und die den benutzten Quellen wörtlich un
 }%
 \@maketitlepages
 }
-
 %% Headings -------------------------------------------------------------
 
 \RequirePackage{fancyhdr}

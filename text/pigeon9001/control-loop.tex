@@ -1,0 +1,63 @@
+\section{Control Algorithms}
+\author{Sebastian Schaffler}
+
+\subsection{Hovering}
+
+The Pigeon 9001 hovering algorithm is heavily influenced by the previously developed hovering software for Pigeon 9000. It utilizes the same concept of pulse width modulation over time via delta timing. Instead of relying upon external sensors, which could only determine a boolean value of presence at a certain altitude, Pigeon 9001 can make use of the distance sensor built into its corpus. This way the algorithm always has exact knowledge of its current altitude and can act accordingly.
+
+For this reason the hovering altitude is not dictated by the position of any hardware component but instead can be set via parameter. If a proper interface for changing the position parameter during runtime is implemented by a subsequent student team, the very same algorithm can be used to precisely steer the corpus altitude by hand.
+
+In order to achieve hovering around a given altitude, the software constantly checks the current altitude and either increases or decreases the operation ratio. This ratio dictates the length of the air pulse released by the valves.
+
+\subsection{Soft Landing}
+
+Originally it was intended to utilize the already proven pulse with modulation approach for the soft landing algorithm, however the behavior of the software turned out to be very indeterministic and mostly resulted in hard impact. Initially it the program was run once every \SI{50}{\milli\second} because this was an optimal tick rate for the hovering algorithm, but measuring the time it took for the corpus to reach the ground quickly revealed that the tick length had to be significantly shortened. The entire fall from a height of \SI{90}{\centi\meter} takes about \SI{270}{\milli\second} which meant a \SI{50}{\milli\second} tick length would let the program check the sensor value only five times before impact. Because of this it was decided to set the tick length to the absolute possible minimum. It takes the program between \SI{3.5}{\milli\second} and \SI{4.8}{\milli\second} to run through its loop once, therefor a tick length of \SI{5}{\milli\second} was chosen.
+
+Subsequent tests with a tick length of \SI{5}{\milli\second} per run resulted in the same indeterministic behavior. Another potential problem could have been the fact that the algorithm has to react and adjust the thrust mainly in the lower parts of the fall, however the constant acceleration due to gravity shortens this critical timespan even further. 
+
+\begin{figure}[H]
+\centering
+
+\includegraphics[width=10cm]{ticks_during_fall_wbg}
+
+\caption{Path-time diagram depicting the corpus being dropped without firing the thrusters. The black boxes represent the approximate points at which the software checks the distance to the ground with a tick length of \SI{5}{\milli\second}.}
+\end{figure}
+
+%fucking mathcad diagramme.....
+
+Extensive analysis of high speed visual and acoustic recordings of multiple tests revealed that the current hardware is not able to support high speed thrust regulation. Two main sources of delay where identified. The largest source is the mechanical delay of the relay and the valve, the timespan between the flash of the relay control LED and the acoustic confirmation of the valve opening amounts to about \SI{15}{\milli\second}. The second significant source is the long pressure tube between the valve and the nozzle, the delay between the valve opening and the nozzle producing thrust is about \SI{5}{\milli\second}, therefor creating a total delay of \SI{20}{\milli\second}. This rules out any type of pulse width modulation for the landing algorithm, because even if the software is able to adjust the thrust in time, the hardware is not.
+
+
+Since the valves are digital and adjusting thrust via pulses has been ruled out, a totally different approach had to be chosen. It has been decided to add another parameter besides the target altitude, which usually is set to zero for landing but if future student teams decide to combine the hovering and  landing algorithms this can be different. The new parameter describes the expected deceleration which is the measured thrust divided by the mass of the corpus minus the acceleration due to gravity.
+
+\begin{figure}[H]
+\begin{align*}
+a_{exp}={\frac {T}{m}}-g
+\end{align*}
+\begin{align*}
+a_{exp} &= \text{expected deceleration in \si{\meter\per\second\squared}} & T &= \text{measured thrust in \si{\newton}} \\
+m &= \text{mass of the corpus in \si{\kilo\gram}} & g &= \text{acceleration due to gravity in \si{\meter\per\second\squared}}
+\end{align*}
+\begin{align*}
+{\frac {1.9614}{0.17}}-9.807=1.731
+\end{align*}
+\caption{The expected deceleration of Pigeon 9001 is \SI{1.731}{\meter\per\second\squared} at an operating pressure of \SI{6}{\bar}.}
+\end{figure}
+
+In case of Pigeon 9001 the expected deceleration is \SI{1.731}{\meter\per\second\squared} at its operating pressure of \SI{6}{\bar}, however variations in pressure can significantly influence this value.
+
+The new algorithm revolves entirely around the calculation of the altitude, at which the corpus would come to a halt if it would start firing its thrusters \SI{20}{\milli\second} in the future. This calculation is executed every \SI{5}{\milli\second} for as long as the corpus detects itself as falling and does not yet fire its thrusters. As soon as this calculated altitude is in a certain tolerance area above or underneath the target altitude the valves are told to fire, which they will do \SI{20}{\milli\second} after the signal has been given. During the deceleration phase the program only checks its current altitude and as soon as it detects itself inside the tolerance area, the valves are shut down and the corpus has landed.
+
+The halting altitude is the altitude in \SI{20}{\milli\second} minus the squared velocity in \SI{20}{\milli\second} divided by double the expected deceleration. Since Pigeon 9001 does not have a sensor for velocity, the current velocity has to be calculated by dividing the difference in altitude by the time between measurements. This calculation can be verified or corrected by the time since which the corpus has been falling times the acceleration due to gravity.
+
+\begin{figure}[H]
+\begin{align*}
+h_{halt}=({h_{curr}-({v_{curr}*0.02}+{g*0.01}}))-{\frac{({v_{curr}+g*0.02})^{2}}{2*a_{exp}}}
+\end{align*}
+\begin{align*}
+h_{halt} &= \text{halting altitude} & h_{curr} &= \text{current altitude} \\
+v_{curr} &= \text{calculated current velocity} & a_{exp} &= \text{expected deceleration} \\
+g &= \text{acceleration due to gravity}
+\end{align*}
+\caption{The altitude at which the corpus will reach a velocity of zero if it fires the thrusters in \SI{20}{\milli\second}. This calculation is executed every \SI{5}{\milli\second} and compared with the target altitude.}
+\end{figure}

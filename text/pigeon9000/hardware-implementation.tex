@@ -1,15 +1,18 @@
 \section{Hardware implementation}
+\author{Sebastian Schaffler}
 \subsection{Planning}
-In the first meeting the most expensive and important part was acquired, a digitally controllable valve by Festo \cite{festo-valve} capable of handling pressures of up to 8bar. Additionally options for a linear guide and the rocket corpus were discussed. Using a table and utilizing its legs as the guide and a PE pipe as the corpus was deemed the most practical approach. 
+In the first meeting the most expensive and important part was acquired, a digitally controllable valve by Festo \cite{festo-valve} capable of handling pressures of up to 8bar. Additionally options for a linear guide and the rocket corpus were also discussed. Using a table and utilizing its legs as the guide and a PE pipe as the corpus was deemed the most practical approach. 
 
-Table leg diameters were gathered by browsing the table section of a large furniture store to compare to PE pipes available in nearby hardware stores. When suitable guides and corpora were found they were compared until a \SI{37}{\centi\meter} high side table \cite{table} with a leg diameter of \SI{25}{\milli\meter} and a pipe with \SI{27}{\milli\meter} inner diameter were picked. Additionally a special plastic glue, intended to be used to attach the pressure tubes to the rocket body, was purchased, even though the exact type of pressure tube that was going to be used was still unknown.
+Table leg diameters were gathered by browsing the table section of a large furniture store to compare to PE pipes available in nearby hardware stores. When suitable guides and corpora were found they were compared until a \SI{37}{\centi\meter} high side table with a leg diameter of \SI{25}{\milli\meter} and a pipe with \SI{27}{\milli\meter} inner diameter were picked. Additionally, a special plastic glue, intended to be used to attach the pressure tubes to the rocket body, was purchased, even though the exact type of pressure tube that was going to be used was still unknown.
+
+%\cite{table} link 404
 
 After the essential parts were gathered construction work began. 
 
 \subsection{Basic components}
 A \SI{5}{\centi\meter} segment of the pipe was cut off to form the demonstrator corpus.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 
 \includegraphics[width=70mm]{sketch_01_table_and_corpus}
@@ -17,56 +20,54 @@ A \SI{5}{\centi\meter} segment of the pipe was cut off to form the demonstrator 
 \caption{Table with corpus fitted to one of its legs. The table legs have a diameter of \SI{2,5}{\centi\meter} and a height of \SI{36}{\centi\meter}. The tube that is used as the corpus is \SI{5}{\centi\meter} high, has an inside diameter of \SI{2,7}{\centi\meter} and an outside diameter of \SI{3,2}{\centi\meter}. Therefor the clearance between guide and corpus is \SI{1}{\milli\meter}.}
 \end{figure}
 
-% Insert math here
-
 Initial weight measurements amounted to \SI{8,13}{\gram}. High tolerances were included in the initial calculations because attaching the pressure tubes to the body was expected to double its weight, which was later confirmed by a measurement of \SI{17,53}{\gram}.
 
 It was assumed that a nozzle at the end of the pressure tube was needed in order to produce a sufficient amount of thrust to lift the corpus.
 To validate this assumption an electronic grain scale was used. Air pressure was applied to the scale surface from a distance of \SI{1}{\centi\meter} through a generic air blow gun with a nozzle diameter of \SI{2}{\milli\meter}. With \SI{2,5}{\bar} out of \SI{8}{\bar} available pressure, the scale was maxed out at \SI{100}{\gram} which led to the realization that the amount of thrust produced by the compressor was more than enough to achieve liftoff. 
 
 
-After receiving a PU pressure tube with \SI{6}{\milli\meter} outer diameter and \SI{4}{\milli\meter} inner diameter, attempts were made to attach it to the corpus with the previously purchased plastic glue which was not able to connect the parts. In the course of investigating the problem it was discovered that the unreasonably expensive glue was not meant to stick to PE, which was mentioned in the fine print of the product packaging but went unnoticed. Instead, duct tape was used as a temporary solution. 
+After receiving a PU pressure tube with \SI{6}{\milli\meter} outer diameter and \SI{4}{\milli\meter} inner diameter, attempts were made to attach it to the corpus with the previously purchased plastic glue which was not able to connect the parts. In the course of investigating the problem it was discovered that the glue was not meant to stick to PE, which was mentioned in the fine print of the product packaging but went unnoticed. Instead, duct tape was used as a temporary solution. 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 
-\includegraphics[height=85mm]{sketch_03_corpus}
+\includegraphics[height=70mm]{sketch_03_corpus}
 
 \caption{PE pipe used as rocket corpus. Duct tape is utilized to attach two PU tubes to either side of the body.}
 \end{figure}
 
-Consulting the documentation of the Festo valve revealed the need for a \SI{24}{\volt} power source. At this point in time it was still planned to power the whole prototype off battery power, for the sake of portability. The lack of cheap and long-lasting batteries that could be combined to provide \SI{24}{\volt} led to the conclusion, that a power supply was necessary. This resulted in an online purchase of a laptop charger \cite{power-supply} with the appropriate voltage from a common online retailer.
+Consulting the documentation of the Festo valve revealed the need for a \SI{24}{\volt} power source. At this point in time it was still planned to power the whole prototype via battery power, for the sake of portability. The lack of cheap and long-lasting batteries that could be combined to provide \SI{24}{\volt} led to the conclusion, that a power supply was necessary. This resulted in an online purchase of a laptop charger \cite{power-supply} with the appropriate voltage from a common online retailer.
 
 \subsection{Pneumatics 101}
-Connecting the PU tube to the Festo valve proved difficult because \SI{4}{\milli\meter} inner diameter is not an off-the-shelf size but instead used in industrial applications, therefor visits of every nearby hardware store with the intention of finding fitting connector parts were unsuccessful. Instead of ordering proper parts in a specialized online store, the decision was made to buy parts that were not intended for the tube diameter because long delivery times would have delayed the assembly by about a week. A crimp fitting with \SI{6}{\milli\meter} inner diameter, \SI{10}{\milli\meter}-\SI{16}{\milli\meter} regular hose clamps and \SI{11}{\milli\meter}-\SI{13}{\milli\meter} o-clip hose clamps were purchased. 
+Connecting the PU tube to the Festo valve proved difficult because \SI{4}{\milli\meter} inner diameter is not an off-the-shelf size but instead used in industrial applications, therefor visits to every nearby hardware store with the intention of finding fitting connector parts were unsuccessful. Instead of ordering proper parts in a specialized online store, the decision was made to buy parts that were not intended for the tube diameter because long delivery times would have delayed the assembly by about a week. A crimp fitting with \SI{6}{\milli\meter} inner diameter, \SI{10}{\milli\meter}-\SI{16}{\milli\meter} regular hose clamps and \SI{11}{\milli\meter}-\SI{13}{\milli\meter} o-clip hose clamps were purchased. 
 
 Connecting the crimp fitting to the pressure tube was successful with the help of a bunsen burner and a high amount of force. Electrical tape was wrapped around the tube to increase its diameter in an effort to enable the clamps to fit.
 
-The o-clip hose clamp could not be applied because its diameter was still to large, even in its crimped down state. The regular hose clamp fitted by over tightening it. This solution was not ideal because testing the connection revealed a high amount of pressure loss. It was therefor necessary to put up with the shipping delay and wait for the proper sized crimp fittings to arrive. A T-shaped crimp fitting was ordered in addition to regular crimp fittings and proper sized o-clip hose clamps in an effort to simplify the connection between the valve and both of the corpus tubes. Additionally the required electrical cable for the Festo valve was ordered because it too is not an off-the-shelf part and the risk generated by randomly sticking wires into the exposed ports on the valve was deemed too high.
+The o-clip hose clamp could not be applied because its diameter was still to large, even in its crimped down state. The regular hose clamp fitted by over tightening it. This solution was not ideal because testing the connection revealed a high amount of pressure loss. It was therefor necessary to put up with the shipping delay and wait for the proper sized crimp fittings to arrive. A T-shaped crimp fitting was ordered in addition to regular crimp fittings and proper sized o-clip hose clamps in an effort to simplify the connection between the valve and both of the corpus tubes. Additionally, the required electrical cable for the Festo valve was ordered because it too is not an off-the-shelf part and the risk generated by randomly sticking wires into the exposed ports on the valve was deemed too high.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 
-\includegraphics[width=45mm]{tube_botch}
+\includegraphics[width=65mm]{tube_botch}
 
 \caption{Botched PU pressure tube fixed to an over sized crimp fitting by heating the tube ending and wrapping it in electrical tape to increase its outer diameter. Additionally the connection is secured with an overtightened hose clamp.}
 \end{figure}
 
 The waiting period was utilized to find a fitting connector between the Festo valve and a customary compressor. This proved difficult because the connector size used by the valve is 1/8inch, which is mostly used in industrial applications. The compressor uses a more common 1/4inch connector, therefor an adapter was needed. Out of four nearby hardware stores only one carried any parts that were similar to the ones needed. These were promptly acquired and surprisingly fitted without any further issues.
 
-\begin{figure}[h]
-\centering
-
-\includegraphics[width=85mm]{valve_assembly}
-
-\caption{Festo valve with proper power connection. The T-shaped crimp fitting connects the valve to the pressure tubes that are attached to the corpus. The o-clip hose clamps provide additional protection against pressure loss. The compressor connector is attached to the valve via a 1/4inch to 1/8inch threaded adapter.}
-\end{figure}
-
 The delivered T-shaped crimp fitting finally enabled a successful connection between the corpus and the valve without any noticeable pressure loss.  
 
 With most mechanical components in-place the attention was shifted to the electronic parts necessary, starting with a breadboard which was salvaged from an educational experimentation kit. 
 
 To control the electronic valve with a microcomputer later on, it was plugged into the normal close port of a relay which allows for programmatic switching of \SI{24}{\volt} power. 
+
+\begin{figure}[H]
+\centering
+
+\includegraphics[width=12cm]{valve_assembly}
+
+\caption{Festo valve with proper power connection. The T-shaped crimp fitting connects the valve to the pressure tubes that are attached to the corpus. The o-clip hose clamps provide additional protection against pressure loss. The compressor connector is attached to the valve via a 1/4inch to 1/8inch threaded adapter.}
+\end{figure}
 
 \subsection{Control components}
 A Raspberry Pi Zero W \cite{raspberry-pi-zero-w} was chosen as the development board because it was assumed that a smaller form factor than a regular Pi would be beneficial. 
@@ -77,28 +78,28 @@ Additionally, the Zero W did not have to be acquired because it was already avai
 
 An Arduino was decided against mainly because of the slower and less convenient development experience and the missing support of many major programming languages. 
 
-Before mounting the components onto the table they were tested individually. Once the functionality of each part was validated a demo application was written in Python to assess their combined functionality by switching the relay on and off. In the first dry run without a compressed air supply the valve emitted an audible click which gave the impression of a full switch operation happening inside the component.
+Before mounting the components onto the table they were tested individually. Once the functionality of each part was validated, a demo application was written in Python to assess their combined functionality by switching the relay on and off. In the first dry run without a compressed air supply the valve emitted an audible click which gave the impression of a full switch operation happening inside the component.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 
-\includegraphics[width=130mm]{sketch_04_topview}
+\includegraphics[width=160mm]{sketch_04_topview}
 
 \caption{Table construction from the top depicting all essential components. In the bottom left corner the valve is mounted to the table with two screws, the \SI{24}{\volt} power supply is surrounded by the valve power cable. The distributor socket is fixed to the bottom right corner with double-sided tape which provides power to the valve and the Raspberry Pi 3 Model B in the upper right corner. The breadboard is connected to the Pi with a ribbon cable. The relay, which controls the valve power circuit, is attached to the breadboard with jumper cables.}
 \end{figure}
 
 \subsection{Finalizing assembly}
-After these tests where conducted all components were mounted onto the top of the table in addition to a distributor socket with the purpose of simplifying power delivery.
+After these tests were conducted, all components were mounted onto the top of the table in addition to a distributor socket with the purpose of simplifying power delivery.
 
-To transport the compressed air to the corpus, where it is needed to produce thrust, the pressure tubes mounted to the simulated rocket body had the be routed to the valve in a way that did not cause much interference with its flight behavior. 
+To transport the compressed air to the corpus, where it is needed to produce thrust, the pressure tubes mounted to the simulated rocket body had to be routed to the valve in a way that did not cause much interference with its flight behavior. 
 
-In an effort to combat the stiffness of the air tubes they were suspended from the vertical middle of the table leg right next to the designated guide leg, however this did not improve the issue but worsened it instead. 
+In an effort to combat the stiffness of the air tubes they were suspended from the vertical middle of the table leg right next to the designated guide leg. However, this did not improve the issue but worsened it instead. 
 
-After some investigation it was discovered that the length of the dangling tubes is the main determining factor in reducing its overall stiffness, so instead of routing the tubes from the leg beside the corpus, the upper end of the leg that is diagonal to the guide was chosen as the suspension point. This mounting position was chosen because it provides the greatest possible free hanging distance within the confines of the table.
+After some investigation it was discovered that the length of the dangling tubes was the main determining factor in reducing its overall stiffness, so instead of routing the tubes from the leg beside the corpus, the upper end of the leg that is diagonal to the guide was chosen as the suspension point. This mounting position was chosen because it provides the greatest possible free hanging distance within the confines of the table.
 
 
 \subsection{Manual control}
-With the installation of all components completed, a first test run with the intention of verifying the behavior of the valve under real conditions was conducted, this time with an electrical compressor connected to it. Instead of controlling it with a computer program, the power cable was manually plugged into the breadboard for short periods of time, with the expectation of successful on/off switches of the valve, however that was not the case. Instead air was flowing through even though the valve was supposed to be in a closed state. 
+With the installation of all components completed, a first test run with the intention of verifying the behavior of the valve under real conditions was conducted, this time with an electrical compressor connected to it. Instead of controlling it with a computer program, the power cable was manually plugged into the breadboard for short periods of time, with the expectation of successful on/off switches of the valve, however that was not the case. Instead, air was flowing through even though the valve was supposed to be in a closed state. 
 
 Reviewing the documentation revealed that the minimum amount of pressure required for full operation is \SI{2,5}{\bar}. This was not achievable because the valve would have to cut off the air-flow to allow the compressor to build up pressure.
 

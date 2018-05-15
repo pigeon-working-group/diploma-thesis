@@ -1,54 +1,121 @@
-\section{Hardware implementation}
+\section{Hardware Implementation}
+\author{Sebastian Schaffler}
+
 \subsection{Planning}
-The dimensions of the second prototype had to be small enough to fit into the trunk of a car but also large enough to mitigate the stiffness of the tubes allowing for a movement range and therefor a guide height of about \SI{1}{\meter}. As a result of these constraints, fold-able side arms had to be considered for the sole purpose of suspending the pressure tubes and cables which had to be routed along the tubes to allow for a connection to the sensors. A \SI{80}{\centi\meter} by \SI{40}{\centi\meter} baseplate and a \SI{1}{\meter} high guide structure would form the basis of the main buildup.
-% überlegen wie genau wir den test-stand und korpus umsetzen
+The dimensions of the second prototype had to be small enough to fit into the trunk of a car but also large enough to mitigate the stiffness of the PU pressure tubes allowing for a movement range and therefor a guide height of about \SI{1}{\meter}. As a result of these constraints, fold-able side arms had to be considered to suspend the pressure tubes and cables which had to be routed along the tubes to allow for a connection to the circuitry mounted on the corpus. Additionally, the side arms would serve as mounting points for the valves to minimize the distance between valve and nozzle.
 
-To restrict the movement capabilities of the corpus to tilting and vertical positioning a rectangular or elliptical guide cross section was deemed to be best the option, however prevention of side-sliding movement was not possible with this solution. This was combated by splitting the guide into two parts and adding a restriction pin in the middle of the corpus. 
+A \SI{80}{\centi\meter} by \SI{40}{\centi\meter} baseplate and a \SI{1}{\meter} high guide structure would form the basis of the main buildup. 
 
-The most feasible construction approach was suspected to be two cylindrical rods separated by the width of the restriction pin. The structure inside the corpus, needed to achieve the desired movement restrictions, has to resemble a cuboid insertion slot for the guide wide enough to allow for tilting. To implement this shape it was decided to use two pins on the bottom and top of the corpus to model the slot shape and one vertically centered pin perpendicular to the long axis of the cuboid to function as the restriction pin. With this concept the geometry of the corpus does not matter as long as it is symmetrical and the movement restriction structure and sensors can fit inside.  
+To restrict the movement capabilities of the corpus to tilting and vertical positioning a rectangular or elliptical guide cross section was deemed to be the best option. However prevention of side-sliding movement was not possible with this solution. This was combated by splitting the guide into two parts and adding a restriction pin in the middle of the corpus. 
 
-\subsection{Basic components}
-Wood was chosen as the primary construction material for the test-stand because it can be processed with customary tools relatively quickly and easily in comparison to metals, which require specialized tools. A wooden cupboard top panel was purchased to be used as the baseplate. Cheap \SI{5}{\centi\meter} by \SI{3}{\centi\meter} slats were obtained as the construction material for the side arms. The first side-arm build attempt failed because the planks started twisting. Additionally, incorrect measurements lead to a high amount of waste and not enough remaining supply to redo the build. More expensive planks were then purchased to prevent future deformation. Measurements were respected more carefully the second time and the side arms could be manufactured successfully. Plywood sheets were obtained to serve as the top guide limiter. After the sheets were subjected to high humidity during storage they also started warping. Waste produced while working with the first slats was assembled into a T shape and used as the delimiter instead.
+The most feasible construction approach was presumed to be two cylindrical rods separated by the width of the restriction pin and a third rod, placed \SI{20}{\centi\meter} away from the guide, to act as structural support. The structure inside the corpus, needed to achieve the desired movement restrictions, has to resemble a cuboid insertion slot for the guide wide enough to allow for tilting. To implement this shape it was decided to use two pins on the bottom and top of the corpus to model the slot shape and one vertically centered pin perpendicular to the long axis of the cuboid to function as the restriction pin. With this concept the geometry of the corpus does not matter as long as it is symmetrical and the movement restriction structure and sensors can fit inside.
 
-The same \SI{32}{\milli\meter} diameter PE pipes used as the corpus of the first prototype were chosen as the guides because of their low price and rather low friction when treated with silicon spray. A \SI{10}{\centi\meter} diameter pipe was chosen as the corpus because of its light weight and the ability to fit all required parts inside. 
+\begin{figure}[H]
+\centering
 
-A PE pipe with a diameter of \SI{15}{\milli\meter} was acquired as the building material for the cuboid movement restriction structure. After initial building efforts the results were deemed unsatisfactory because it was too wide and it was decided that another material was necessary. A carbon arrow with a diameter of \SI{5}{\milli\meter} was discovered while going through available supplies. The arrow shaft was able to be utilized effectively because of its light weight and small width.
+\includegraphics[width=90mm]{sketch_2-01_corpus_seethrough}
 
-unsatisfied 
-unsatisfactory 
+\caption{The movement restriction structure as it was envisioned. It is able to slide up and down the guiding rods as well as rotate around the center restriction pin.}
+\end{figure}
 
-% schnell + billig = holzkonstruktion statt metall oder andere schwer verarbeitbare werkstoffe, 2 pe pipes als guides 1ner als stütze und future proofing falls mehr freiraum auf dem prototypen benötigt wird, große platte als grundplatte, große pipe für korpus + sehr dünne pipe für restriction im korpus
+\subsection{Basic Construct}
 
-% skizze + beschreibung
+Wood was chosen as the primary construction material for the test-stand because it can be processed with customary tools relatively quickly and easily in comparison to metals, which require specialized tools. A wooden cupboard top panel was purchased to be used as the baseplate. Cheap \SI{5}{\centi\meter} by \SI{3}{\centi\meter} slats were obtained as the construction material for the side arms. The first side arm build attempt failed because the planks started twisting. Additionally, incorrect measurements lead to a high amount of waste and not enough remaining supply to redo the build. More expensive planks were then purchased to prevent future deformation. Measurements were respected more carefully the second time and the side arms could be manufactured successfully. Plywood sheets were obtained to serve as the top guide limiter. After the sheets were subjected to high humidity during storage they also started warping. Waste produced while working with the first slats was assembled into a T shape and used as the delimiter instead.
 
-% billigstmöglichstes material gekauft
-% speerholzplatten und schlecht verarbeitete holz-latten
-% beim zerschneiden der latten fehler aufgetreten, weil maße vor konstruktion nicht genau genug festgelegt
-% hochwertigere latten umgestiegen, weil alten latten verbogen und splitter wurden als sicherheits-risiko eingestufe
-% geschliffene latten gekauft
-% speerholzplatten als begrenzung angedacht, wurden aber erst später verarbeitet
-% hohe luftfeuchtugkeit in dev-hq -> nach 2 tagen vollkommen verbogen
-% verschnitt von vorher ausreichend als begrenzung
-% um pipes auf grundplatte zu mounten mehrere ideen:
-% winkeln, stören aber den korpus
-% zip-ties, als zu instabil bewertet, können noch immer stören
-% holz-stöppel mit gleißen außenausmaß wie das innenausmaß der pe pipe
-% mit hotglue zu befestigen
-% durchbohrt um eine große feste schraube durchzubohren
-% von unten durch die platte in die stöppel
+\begin{figure}[H]
+\centering
 
-% holz stöppel mit ähnlichen ausmaß wurden gefunden -> ca. 5mm clearance -> mit ducttape ausgeglichen (skizze)
-% damit eine area ohne clearance genau passt und eine mit bisschen abstand wo kleber rein kann
+\includegraphics[width=120mm]{sketch_2-02_basic_structure}
 
-% hinterer nur angeschraubt, da dieses mounting-verfahren sehr aufwendig ist, weil die stütze nicht primär als führung gedacht 
-% festgeschraubt
+\caption{The Basic structure consists of two guide rods and an additional pillar for stability, as well as fold-able side arms to suspend the pressure tubes and wires.}
+\end{figure}
 
-% extreme caution is adviced wenn man mit viel hotglue arbeitet, da die masse zu schweren verbrennungen führen kann
+The same \SI{32}{\milli\meter} diameter PE pipes used as the corpus of the first prototype were chosen as the guides because of their low price and rather low friction when treated with silicon spray. Multiple ways of attaching the guides to the base plate were investigated. 
+Initially cornered mounting brackets were considered but ultimately decided against because mounting them with screws would reduce the usable length of the guide due to screw heads that protrude from the guide surface. An additional concern was possible warping as a result of screwing the round pipes onto flat surfaces. 
 
-% stöppel auch für deckel verwendet, da das prinzip sich als erfolgreich herausgestellt hat
-% allerdings nicht angeklebt, weils durch die connection zur stütze nicht notwendig ist
-% abnehmbar um den korpus wartbar zu machen
+Another considered approach was using zip-ties, which was eventually scrapped because of instability concerns. 
+Wooden plugs inserted into both ends of the guides which would then be screwed into place from below the base plate were investigated as a possible mounting solution after finding a wooden rod with an outer diameter that matched the inner diameter of the PE pipes. After cutting the wooden rod into \SI{10}{\centi\meter} pieces a \SI{15}{\milli\meter} hole was drilled through the entire plug to bolt it to the base plate. To ensure the connection between the plug and the PE pipe, duct tape was wrapped around the lower half of the plug so that the pipe would stay stuck to it. The plugs on the bottom of the pipe were then secured into place by pouring approximately half a glue gun stick into each of the pipes which would seep into the gap between the upper half of the wooden piece and the guide pipe. Extreme caution is advised when working with large amounts of hot glue to avoid burn wounds. The upper ends of the guide and the support pipe are connected with the previously assembled T shape delimiter made of scrap wood by bolting it to the top plugs on the pipes. These bolts are fastened with butterfly nuts to allow for convenient removal of the corpus from the guide. 
 
-% dünne pipe noch immer zu dick für restrictions in korpus
-% restrictions in korpus -> carbon pfeile
+\subsection{Stationary Installations}
+It was decided to use the same type of Festo valve that was utilized in the construction of Pigeon 9000, because the amount of thrust generated had to be artificially limited by supplying less pressure than the maximum supported \SI{8}{\bar}. The thrust overhead was deemed sufficient for the bigger size of Pigeon 9001, therefor two valves were acquired and mounted to the top of the fold-able side arms. Additionally PU pressure tubes and valve power cables were installed and routed along the side arms.
 
+Two core cables were used to connect the corpus circuitry to the ground equipment, but due to curling it was necessary to span them to their maximum length and place weights on each end. After approximately a week of straightening they were successfully uncurled. The cable was then cut into four, approximately \SI{1.5}{\meter} long pieces, two of which were routed along the fold-able side arms. Female and male pins were soldered to the ends of the wires to create a quick-disconnect system at the location of the valves, which was deemed convenient for corpus maintenance. The wire routed along the left side of the prototype supplies voltage to the Raspberry Pi Zero W and its sensors, which are to be mounted to the corpus. The cable on the right side carries control signals from the on-corpus electronics to the relays located on the base plate. 
+
+For the pneumatic installations on the base plate, many lessons learned from Pigeon 9000 were taken into account. To allow for pressure to build up to the minimum required by the valves, a gate valve was installed. As for pressure regulation, the same component that was used on the first prototype was deemed sufficient. In addition to those parts a \SI{2}{\liter} Festo pressure tank\cite{pressure-tank} and a Gems pressure sensor\cite{pressure-sensor} where installed. These components were intended to test landing algorithms with very limited propellant supply, which are tasks that will exceed the scope of this project and are intended for future students.
+
+The electronics on the baseplate include a second Raspberry Pi Zero W intended to read the pressure sensor, the relays for controlling the two valves and a breadboard. This breadboard was used to connect a \SI{5}{\volt} mobile phone charger with split open cables to the wires which carry voltage to the corpus. It also connects the signal wires to the relays and is intended to be used in the continuation of this project to install an MCP3008 to read the pressure sensor. A \SI{12}{\volt} power supply was also installed to power the valves.
+
+%sketch installations
+
+\subsection{Corpus}
+
+\subsubsection{Frame}
+
+A \SI{10}{\centi\meter} diameter pipe was chosen as the corpus because of its light weight and the ability to act as structural support for all other on board components.% <--- ????
+
+At first a PE pipe with a diameter of \SI{15}{\milli\meter} was acquired as the building material for the cuboid movement restriction structure. After initial building efforts the results were deemed unsatisfactory because restriction pins were too wide and it was decided that another material was necessary. A carbon arrow with a diameter of \SI{5}{\milli\meter} was discovered while going through available supplies. The arrow shaft was able to be utilized effectively because of its light weight and small width. After the corpus structure was assembled just like envisioned, two \SI{5}{\centi\meter} long pieces of a slightly wider aluminum arrow shaft were mounted on the outside of the corpus with hot glue and duct tape. These were intended to hold the PU pressure tubes and point them downwards. The hot glue however held only for a few days due to the amount of jerking the corpus experienced during operation, but it was deemed sufficient to leave them attached only by tape as that was able to withstand without damage. 
+
+To attach all necessary electronic components it was decided to build a \SI{6}{\centi\meter} by \SI{2}{\centi\meter} by \SI{5}{\centi\meter} box out of a wood-foam layered composite material and attach it at a location where it would not be able to interfere with the rotation of the corpus. This material was chosen as it has some shock absorbing abilities but is still able to provide strong structural support. The box was mounted with screws and a long piece of tape was then wrapped around the corpus to help all externally mounted components withstand the constant shaking. 
+
+\subsubsection{Electronic components}
+
+A Raspberry Pi Zero W, the on-corpus computer on the side of the box, and a small prototyping board with an MCP3008 and all its necessary circuitry, were both fixed to the wood-foam composite structure via screws. Since the shape of the available internal measurement unit \cite{imu} was not very screw friendly and glue was deemed unfit for the aforementioned reasons, it was decided to make use of the soft nature of the electronics box. Downward facing pins were soldered onto the IMU and small holes were pierced through the top of the composite material in the correct circular pattern. The pins of the IMU were inserted into these holes and the unit was secured by the female plugs on the inside of the box.
+
+It was agreed upon that cutting every wire to the exact needed length would be too cumbersome, instead all wires were taped to the walls of the corpus creating loops. Those loops were stuffed into the box which was then sealed shut with duct tape to prevent the cables from falling out during operation.
+
+\begin{figure}[H]
+\centering
+
+\includegraphics[height=47mm]{9001_corpus}
+\includegraphics[height=47mm]{9001_corpus_2}
+\vspace{10pt}
+\caption{The rocket corpus of Pigeon 9001. The electronic equipment consists of a Raspberry Pi Zero W, an internal measurement unit, an infrared distance sensor and an MCP3008 analog/digital converter. Most components are secured in place with duct tape because it has proven to be most durable under the constant shaking during operation.}
+\end{figure}
+
+\subsubsection{Distance sensor}
+
+An ultrasonic distance sensor was originally envisioned to provide altitude measurements, however even though the sensor delivered very good measurements up to \SI{1}{\meter} while it was held by hand and pointed at the floor, the values received turned completely nonsensical above approximately \SI{15}{\centi\meter} as soon as the sensor was attached to the corpus. This phenomenon was traced back to be the result of the sound waves, which travel outward from the sensor in a cone, hitting the guide rods and bouncing back to the sensor early. The reason why it only occurred above \SI{15}{\centi\meter} is that below this distance the sound cone is narrow enough to not hit the guide before reaching the floor. The only available alternative at the time was a Sharp infrared distance sensor, this device however had the downside of having a specified maximum range of \SI{80}{\centi\meter} on paper, which would be enough to utilize almost the entire length of the \SI{1}{\meter} guide rail. The actual operational range of the sensor turned out to be about \SI{60}{\centi\meter}, which meant that only about half of the available length of the guide was able to be used.
+
+The distance sensor was placed on the opposite side of the electronics box on the corpus and plugged into port 1 of the MCP3008. This position was chosen to keep the center of mass near the geometrical center of the corpus to minimize friction that would be induced by the torque pressing the restriction structure onto the guide rail. The balancing effect was lessened by the use of the Sharp sensor since it is significantly lighter than the originally intended ultrasonic sensor, however since the distance sensor is intended to be exchanged with a more capable alternative by future students the position was kept.
+
+The lack of large surfaces on the infrared distance sensor made it necessary to find a different attachment solution. The sensor does have lugs on its plastic housing designed to screw it onto some type of support, but the orientation of those was perpendicular to the direction that was needed in this case. It was then decided to drill holes into the corpus and fasten it down using zip ties, additionally to put bit of distance between the infrared beam and the hull of the corpus, and to protect the sensor from sudden shocks, it was deemed adequate to put a patch of wood-foam composite material in between the sensor and the corpus wall.
+
+\begin{figure}[H]
+\centering
+
+\includegraphics[height=60mm]{ir_sensor}
+
+\caption{The infrared distance sensor is fastened down with zip ties in order to ensure clear vision to the ground. The wood-foam composite piece ensures that the IR beam emitted by the sensor does not get disturbed by the corpus wall.}
+\end{figure}
+%This needs a better perspective, maybe from slightly below?.. and tuck the tape in
+
+\subsubsection{Propulsion}
+
+With all components attached, the entire corpus had a weight of \SI{170}{\gram}. Tests revealed that in order to lift this amount of mass with \SI{6}{\bar} of air pressure it was no longer sufficient to let the air directly flow out of the pressure tube like on Pigeon 9000. The most practicable way to create some type of nozzle was deemed to be the use of pen tips. Multiple pens with different orifice sizes where available and in order to measure the thrust produced by each nozzle, the same method that was used to test the thrust of Pigeon 9000 was utilized. By measuring the force which the outflowing air applied to a scale it was possible to determine that the optimal pen tip was one with a nozzle diameter of \SI{2}{\milli\meter}, effectively halving the \SI{4}{\milli\meter} diameter of the original orifice. The single nozzle produced approximately \SI{1}{\newton} of thrust at \SI{6}{\bar}, meaning that two of those should suffice to lift the corpus with some margin. Tests after the installation resulted in success.
+
+%evtl tabelle mit testergebnissen 
+
+\subsection{Finalizing Assembly}
+\author{Philip Trauner}
+
+To set the prototype up for flight, the pressure tubes and wires that connect the corpus to the ground equipment have to be installed. This is done by sliding the tubes into the arrow shaft pieces on the side of the corpus backwards. They are held in place due to the fact that the pen tips that are fixed to the tubes are too large to fit through the arrow shaft, eliminating the need for a permanent connection, increasing the ease of maintenance. The wires are then routed along the tubes and taped into place at a few points. To slide the corpus onto the guide rail, the T shape delimiter has to be taken off and on again.
+
+In order to protect the corpus from impact on the wooden base plate, a blackboard eraser with holes cut out for the guide was placed at the bottom of the rods in such a way that it would not absorb the infrared beam from the distance sensor.
+
+To eliminate the need for at least four and possibly more power outlets during operation it was decided to install a large power distributor on the base plate as well.
+
+\begin{figure}[H]
+\centering
+
+\includegraphics[width=130mm]{9001_full_2}
+
+\caption{Final assembly of Pigeon 9001. It is a testbed for the development of landing and hovering algorithms. The algorithms will be executed on the on-corpus Raspberry Pi Zero W which has direct control over both valves. The valves are located at the tips of the fold-able side arms. In addition to on board telemetry the computers are also provided with sensor data of the ground equipment like propellant pressure and temperature which will be crucial for future, more sophisticated algorithms. The ground sensor values are read by another Raspberry Pi on the baseplate and can be transmitted to the on board Pi. This prototype is intended to be continued to be used by future student teams continuing the project.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+
+\includegraphics[height=60mm]{9001_full}
+
+\caption{The arms of the wooden base frame are able to be folded up for storage and transportation. The folded up dimensions are \SI{45}{\centi\meter} by \SI{80}{\centi\meter} by \SI{100}{\centi\meter}. After unfolding the width of the prototype increases from \SI{45}{\centi\meter} to approximately \SI{3.5}{\meter}}
+\end{figure}

@@ -1,9 +1,8 @@
 \section{Difficulties of Rocket Propulsion and Spaceflight}
-\author{Sebastian Schaffler} 
 
-Todays space launch vehicles do not only analyze and evaluate thousands of sensor values in real time, recalculate their trajectories in flight many times and decide which actions to perform in the next few milliseconds and seconds in order to fulfill their mission reliably and safely, but they also have to deal with all the basic physical stumbling blocks, that are naturally inherent to their complexity and nature of purpose. Because of this it is quite obvious that the recent achievements in Rocket landing abilities are only possible because of the incredible advancement in computing technologies that has occurred over the past 20 years. 
+Todays space launch vehicles not only analyze and evaluate thousands of sensor values in real time, recalculate their trajectories during flight many times and decide which actions to perform in the next few milliseconds and seconds in order to fulfill their mission reliably and safely, but they also have to deal with all the basic physical stumbling blocks that are inherent to their complexity and nature of purpose. Because of this it is quite obvious that the recent achievements in rocket landing abilities are only possible because of the incredible advancement in computing technologies that has occurred over the past 20 years. 
 
-The simplest form of rockets commonly encountered today, are fireworks. Simple solid propellant tubes that counter the downwards acceleration of the earths gravity by generating upward thrust. The same can be said for model rockets, as they are essentially the same. Those simple devices however lack the ability of controlling their flightpath which is generally not necessary for those short duration flights, however very much needed for rockets intended to cross the Kármán line, which is the generally acknowledged end of earths atmosphere and lies at \SI{100}{\kilo\meter} altitude. To reach this altitude the rocket is required to compensate for wind sheer and keep its own body upright, which resembles balancing an upside down pendulum. The need for the ability to steer is one of the reasons 'rocket science' has become a synonym for something overly complex, the other being, the faster a rocket intends to go the bigger it has to be. That is because it requires more propellant, but to carry more propellant, it again needs more because it becomes heavier, therefore the size grows exponentially. To achieve orbit a rocket has to first get out of the atmosphere, and carry enough fuel with it to accelerate to approximately \SI{7.8}{\kilo\meter\per\second}, hence the size and amount of capital needed. These facts clarify why orbital spaceflight has only been achieved by a handful of government agencies and dedicated companies.
+The simplest form of rockets commonly encountered today, are fireworks. Simple solid propellant tubes that counter the downwards acceleration of the earths gravity by generating upward thrust. The same can be said for model rockets, as they are essentially the same. However those simple devices lack the ability of controlling their flightpath which is generally not necessary for those short duration flights, but very much needed for rockets intended to cross the Kármán line, which is the generally acknowledged end of earths atmosphere and lies at \SI{100}{\kilo\meter} altitude. To reach this altitude the rocket is required to compensate for wind sheer and keep its own body upright, which resembles balancing an upside down pendulum. The need for the ability to steer is one of the reasons 'rocket science' has become a synonym for something overly complex, the other being that the faster a rocket intends to go, the bigger it has to be. This is the case because it requires more propellant, but to carry more propellant, it again needs more because it becomes heavier, therefor the size grows exponentially. To achieve orbit a rocket has to first get out of the atmosphere, and carry enough fuel with it to accelerate to approximately \SI{7.8}{\kilo\meter\per\second}, hence the size and amount of capital needed. These facts clarify why orbital spaceflight has only been achieved by a handful of government agencies and dedicated companies.
 
 % hobby rocketry not too hard
 % scaling up to suborbital, hard but doable for "amatures"
@@ -12,16 +11,16 @@ The simplest form of rockets commonly encountered today, are fireworks. Simple s
 %abericans saw the need for nasa, esa, creation of roscosmos, other space agencies, only few countries, extreme expenses
 % only recently, only giantic kapiatal bearing companies entered
 
-\subsection{Physical fundamentals of Rocket Propulsion}
+\subsection{Physical Fundamentals of Rocket Propulsion}
+\subsubsection{Main Propulsion}
+Rockets behave according to Newton's laws of motion. Their engines specifically rely on the second and third of them. The second law of motion states that a force is the product of mass times acceleration, and the third law of motion is that for every force there is an equal force pointing in the opposite direction. 
 
-Rockets behave according to Newton's laws of motion. Their engines specifically rely on the second and third of them. The second law of motion states that a force is the product of mass times acceleration, and the third one that for every force there is an equal force pointing in the opposite direction. 
-
-The way a rocket is increasing its velocity is by accelerating and expelling exhaust gases, which have a high velocity, temperature and pressure, into the opposite direction it is supposed to travel, therefore creating a force out the back of the vehicle. This in turn creates a force pointing forward which drives the vehicle in that direction.
+The way a rocket is increasing its velocity is by accelerating and expelling exhaust gases, which have a high velocity, temperature and pressure, into the opposite direction it is supposed to travel, thereby creating a force out the back of the vehicle. This in turn creates a force pointing forward which drives the vehicle in that direction.
 
 The ejection of exhaust gases also has the added benefit of making the vehicle lighter as propellant gets used up. This means that at the beginning of the flight the rocket uses a lot of its force to push its own mass along but towards the end of the powered flight almost all of the thrust produces velocity.
-This interaction between thrust and propellant usage is described by the Tsiolkovsky rocket equation which calculates the total change of velocity that a rocket can theoretically achieve.
+This interaction between thrust and propellant usage is described by the Tsiolkovsky rocket equation which calculates the total change of velocity that a rocket can achieve, which is generally called $\Delta v$.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \begin{align*}
 \Delta v=v_{e}\ln {\frac {m_{f}}{m_{e}}}
 \end{align*}
@@ -29,16 +28,25 @@ This interaction between thrust and propellant usage is described by the Tsiolko
 \Delta v &= \text{possible change in velocity} & v_{e} &= \text{effective exhaust velocity} \\
 m_{f} &= \text{mass when fully fueled} & m_{e} &= \text{mass when the tanks are empty}
 \end{align*}
-\caption{The Tsiolkovsky Rocket Equation or Ideal Rocket Equation calculates the the change of velocity a vehicle is capable of with its dry mass, fueled mass and its engine characteristics. $v_{e}$ is the engine's effective exhaust velocity $I_{sp}*g_{0}$ or specific impulse measured in \si[per-mode = fraction]{\meter\per\second}. $I_{sp}$ is the specific impulse of the engine measured in \si{\second} and describes the thrust of the engine for a given amount of fuel. $g_{0}$ is the standard gravity constant \SI[per-mode = fraction]{9.80665}{\meter\per\second\squared}}
+\caption{The Tsiolkovsky Rocket Equation, or Ideal Rocket Equation, calculates the change of velocity a vehicle is capable of, depending on its dry mass, fueled mass and its engine characteristics. $v_{e}$ is the engine's effective exhaust velocity $I_{sp}*g_{0}$ or specific impulse measured in \si{\meter\per\second}. $I_{sp}$ is the specific impulse of the engine measured in \si{\second} which describes the thrust of the engine for a given amount of fuel. $g_{0}$ is the standard gravity constant \SI{9.80665}{\meter\per\second\squared}}
 \end{figure}
 
-When flying through the atmosphere you loose a lot of velocity to friction, which is the reason why rockets almost always start vertically. This way the vehicle gains altitude quickly and then turns sideways to achieve the needed horizontal velocity.
+When flying through the atmosphere a lot of velocity is lost due to friction, which is the reason why rockets almost always launch vertically. This way the vehicle gains altitude quickly to leave the dense atmosphere and followed by a sideways turn to achieve the needed horizontal velocity.
 
-For a rocket to successfully complete its mission the second key aspect is control. During powered flight, which means while the main engines are turned on, control authority is usually achieved by creating an angular offset between the center of thrust and the center of mass, inducing a torque around the center of mass. When the spacecraft is traveling through the vacuum of space without thrust from the main engine there are two kinds of movement that need to be controlled, generally the more important of which is attitude. This consists of pitch, yaw and roll and describes the crafts rotation around the three axis. Lateral movement is only important in station keeping, that is ensuring the craft stays in its intended orbit, and when rendezvousing with another craft. These two types of control are almost always achieved via a reaction control system, for short RCS. Such a system consists of an arrangement of thrusters mounted tangentially, approximately symmetrical around the expected center of mass on the hull of the spacecraft. This way the RCS system is able to provide thrust either symmetrically or unsymmetrically around the center of mass, therefore resulting in either lateral or rotational movement.
+For a rocket to successfully complete its mission the second key aspect is control. During powered flight, which means while the main engines are turned on, control authority is usually achieved by creating an angular offset between the center of thrust and the center of mass, inducing torque around the center of mass. It is a common misconception that putting the engines, and therefor the origin of the thrust vector at the bottom of the craft is an unwise choice because it makes the entire vehicle unstable. However, this assumption has been called the pendulum rocket fallacy, because at first glance it seems intuitive that hanging the rocket from its thrust origin makes it a self stabilizing pendulum, but when viewed in more detail, it is trivial to realize that the device will remain unstable, no matter how it is built. This is the case because when the rocket tilts, so does the thrust vector and thus the direction in which the pendulum would stabilize is always around the aft end of the vehicle and not the direction in which gravity pulls. Because of this, the decision to put the engine on the bottom of the craft is determined by the added complexity of not doing so, namely the need to pump the fuel in the opposite direction than the acceleration pulls it and the problem of having hot exhaust gases on the outside of the tanks which often hold cryogenic liquids.
 
+\subsubsection{Reaction Control System}
+
+When the spacecraft is traveling through the vacuum of space without thrust from the main engine there are two kinds of movement that need to be controlled, generally the more important of which is attitude. This consists of pitch, yaw and roll and describes the crafts rotation around the three axes. Lateral movement is only important in station-keeping, that is ensuring the craft stays in its intended orbit, and when rendezvousing with another craft. These two types of control are almost always achieved via a reaction control system, for short RCS. Such a system consists of an arrangement of thrusters mounted tangentially, approximately symmetrical around the expected center of mass on the hull of the spacecraft. This way the RCS system is able to provide thrust either symmetrically or unsymmetrically around the center of mass, therefor resulting in either lateral or rotational movement.
+
+
+%\begin{figure}[h]
 %----!
 %skizze!
 %----!
+%\caption{}
+%\end{figure}
+
 
 % rocket equation
 % engine design
@@ -52,19 +60,64 @@ For a rocket to successfully complete its mission the second key aspect is contr
 
 \section{Difficulties of Vertical Landing}
 
-\subsection{Physical fundamentals of Vertical Landing}
+\subsection{Physical Fundamentals of Vertical Landing}
+
+For a long time, bringing spacecraft and rockets down to the ground without damaging them has been done via parachutes, therefor they have developed a high degree of reliability and safety over time. However, they still have two major drawbacks. First, even though it is possible to adopt more sophisticated construction approaches to determine in which orientation and at which speed the payload will hit the surface. The descent behavior can and will usually be changed by atmospheric influences. Those same influences also cause the second and more severe drawback. It is impossible to predict the exact landing location, resulting in the need of kilometer wide landing areas, for which usually only oceans or deserts are a viable option.
+
+The problems of parachutes can be circumvented by performing a powered landing. However this type of descent is much less proven, due to it being comparably new and usually resembling an unstable pendulum. The upside down pendulum results from the center of thrust being beneath the center of mass on traditional rockets. If a dedicated lander is designed, it is sensible to place the thrusters in such a way that the center of thrust is above the center of mass. However adding dedicated landing thrusters on a normal rocket means adding unnecessary complexity and uses up valuable payload capacity.
+
+Atmospheric influences such as different winds in different altitudes are still a concern when landing under engine power, however it can be compensated for when done right. Powered vertical landing from orbit can be split up in 4 main phases. The first phase is orienting the craft to the correct attitude and awaiting entry into the upper regions of the atmosphere. 
+
+As soon as this entry occurs, the second phase begins, slowing the vehicle down to a velocity where aerodynamic heating is acceptable. This phase is usually handled differently depending on the speed of the vehicle and density of the atmosphere. In the case of earth's atmosphere, if the speed is well below orbital, speed can be actively bled off via so called supersonic retro propulsion, which is essentially firing the engined into the direction the vehicle is going. The same, just without the aerodynamic implications, is needed when the planet, on which the craft is intended to land, has close to no atmosphere, independent of the speed of the vehicle. If the celestial body does have an atmosphere and the spacecraft is at orbital velocity, the only viable option, at least initially is slowing down via atmospheric drag. However this method requires significant heat protection, which is usually achieved by coating the leading surface in an ablative material, which chars at the surface and continuously releases protective gases.
+
+The third phase is a gliding period where the craft descends through the atmosphere at relatively low speeds. During this phase the trajectory of the vehicle is highly susceptible to any atmospheric influences, making it not necessary to end the previous phase with pinpoint accuracy, but it increases the chances of success significantly.
+
+The fourth and final phase is the most critical. For powered landing there are currently two approaches: closing in on the landing site slowly via hovering, and the so called hoverslam. The hovering approach is the safer one of the two, but has the significant downside of needing a tremendous amount of fuel. The overall fuel used is largely determined by the amount of course correction that has to be done. The hoverslam on the other hand always uses a consistent and comparatively small amount of propellant. However, it is a risky maneuver as it entails letting the craft fall down further, firing the engines so late that it reaches a velocity of zero at the exact moment of impact. This approach also provides only limited course correction ability and therefor needs at least some amount of control during phase 3. The 'suicide burn' is an extreme form of the hoverslam that is executed at the maximum deceleration, which the vehicle can achieve or withstand. This results in the least fuel usage due to the comparatively short burn.
+
+%formel evtl.
+
 
 % interfering  facors, upside down pendulum
 % trajectories
 % landingpads/mounts
 
-\subsection{Hardware Problems of Vertical Landing}
+\subsection{Hardware Challenges of Vertical Landing}
 
-This rules out the use of simple solid propellant engines since they are unable to shut down on demand, and hardly steerable. The most reasonable approach for a highly steerable engine is liquid fuel as it can be supplied in required quantity and pressure. But these advantages add a significant amount of complexity especially since the chamber pressure of a rocket engine is supposed to as high as possible but building tanks to withstand the same pressure would weigh the vehicle down immensely. To supply the propellants at the required pressure usually a turbo-pump is build in the fuel system. These pumps spin at very high speeds and are mostly driven by burning a small portion of the fuel. They also introduce a lot of complexity to the engine. Another needed capability that raises the complexity level is directable thrust, or gimbaling. This is often achieved via hydraulic actuators which are able to swivel the chamber of the engine and therefore create a misalignment of thrust and center of mass, which in turn creates a torque around the center of mass. The combustion contained in the engine camber also produces a very high temperature, which can only be withstood by actively cooling all components that come in touch with it.
+In order to land a craft or especially a rocket, the vehicle is required to have highly controllable engines, both in terms of steering control and throttle. This rules out the use of simple solid propellant engines since they are unable to shut down on demand, are hardly steerable and lack the ability to adjust their thrust put out completely. The only reasonable approach is the use of liquid fueled engines. For very small applications gas fed engines pose another good alternative because of their simplicity, however even those have to be specifically designed to make the landing safe for any real world applications. For an engine that is supposed to safely and repeatedly carry out landing operations, it is essential to have very deep throttling capability. The typical rocket engine is designed to output as much thrust a possible. However since the rocket will be very light at the time of landing, the high thrust of its engines might not just hurl the vehicle straight up again in a matter of seconds, but the forces created by such an acceleration have a high chance of ripping the vehicle apart. When building a dedicated lander this problem will not arise, since its engines can be designed for the appropriate amount of thrust.
+
+Precise steering is required to perform a landing with pinpoint accuracy. On a rocket, the engines usually already have the ability to gimbal, in order to correct course during ascent. This capability is very convenient for trying to land said vehicle, but during landing the craft may need to correct its descent path in a much more radical fashion than what would ever be needed during launch. Aside from designing an engine with increased gimbal range, one way to provide the required increased agility would be the addition of thrusters mounted perpendicular to the direction of movement. However the already mentioned drawbacks of additional engines usually outweigh their benefits. Another method to achieve higher maneuverability is called differential thrust, meaning to provide a different amount of thrust on either side of the vehicle. This can also be used to extend the ability of gimbaling systems as long as they use more than one engine. The greater the distance between the engines, the higher the torque that can be produced by providing asymmetrical thrust. This method is especially attractive for designated landers as it by far the simplest approach in terms of hardware.
+
+\begin{figure}[H]
+\centering
+\includegraphics[height=6cm]{falcon_9_gimbal_and_rcs}
+\caption{The SpaceX Falcon 9 primarily uses engines with a very high gimbal range. For the final descent it also makes use of its radially mounted RCS thrusters at the top of the booster stage. These are very weak in comparison to the main engines and can therefor only be used when the vehicle is almost at a standstill.}
+\end{figure}
 
 % fast reacting gimbals or directional thrusters
 % aerodynamc steering surfaces, supersonic
 
-\subsection{Software Problems of Vertical Landing}
+\subsection{Software Challenges of Vertical Landing}
+
+The software of a landing craft has two main objectives. One of those is to constantly recalculate the trajectory of the vehicle and ensure that it aims for the right position. The second major task of such software is to slow the vehicle down in the correct manner. 
+%can i write this?
+As previously discussed, there are two different approaches to achieve this. The hovering approach however is usually considered infeasible due to the high fuel consumption, and therefor the hoverslam is the preferred method. 
+
+The biggest problem to overcome is the speed of those calculations. Flight algorithms have to be efficient enough to be able to perform every calculation multiple times per second in order to constantly detect and compensate for any kind of interference.
+
+Large aerospace companies like SpaceX and Blue Origin have only recently succeeded in solving these problems with reasonable reliability. This shows that they are very challenging problems, especially if fuel margins on those vehicles are tight.
+
+\begin{description}
+
+\item [Trajectory] This is the most difficult and most calculation intensive task. It has to continually update the predicted flight path and command course corrections if the path strays out of tolerance. This tolerance becomes continually smaller with decreasing distance to the target.
+
+\item [Hover] The vehicle is to slow down and come to a standstill slightly above the ground in order to give the trajectory algorithm time to correct the position of the craft. While this method allows for less accurate and less efficient calculations, the drawback is the extremely high use of fuel.
+
+\item [Hoverslam] The vehicle is to slow down just like it would with the hovering approach, however the point of zero velocity is directly at zero altitude. This requires very precise and fast trajectory calculation.
+
+\end{description}
+
 
 % constant recalculation of position, attitude and trajectory due to interferences
+% calculation time, loops running through too slow
+
+%... convexification???

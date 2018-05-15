@@ -1,10 +1,10 @@
 \section{JPL Institutional Coding Standard for the C Programming Language}
 \author{Philip Trauner}
 
-In 2009, after approximately 75 years of activity in the aerospace and rocket science field, JPL published a previously internal set of rules regarding the implementation of embedded mission critical code in the C programming language. 
+In 2009, after approximately 75 years of activity in the aerospace and rocket science field, JPL published a previously internal set of rules regarding the implementation of embedded mission critical code in the C programming language. \cite{jpl-coding-standard}
 
 \subsection{Contents}
-Instead of ignoring previous efforts at establishing coding standards for C, the document specifically endorses the MISRA-C:2004 guidelines originally developed for use in the automotive industry, and a set of coding rules referred to as “The Power of 10”. 
+Instead of ignoring previous efforts at establishing coding standards for C, the document specifically endorses the MISRA-C:2004 \cite{misra-c} guidelines originally developed for use in the automotive industry, and a set of coding rules referred to as "The Power of 10" \cite{power-of-ten}. 
 
 Multi-threaded programming is often required in aeronautical applications, even though it can cause safety and reliability concerns when conducted in the C programming language because of its low level nature. The JPL standard contains guidelines that help mitigate these issues.
 
@@ -12,34 +12,34 @@ It is split into six levels of compliance, whereas the last two are excerpts fro
 
 Many rules specifically address characteristics of programs implemented in the C programming language.
 
-\subsection{Project goal}
+\subsection{Project Goal}
 One of the main software design goals of this diploma thesis is to evaluate alternative programming languages that can circumvent certain rules by offering additional compile-time and run-time safety without heavily sacrificing performance while still providing deterministic operation timing.
 
 \section{Alternative languages}
 \subsection{Characteristics}
 A set of characteristics was chosen that is desirable for an alternative implementation language. Support for ARMv6, the processor architecture of the Broadcom BCM2835 chip on the Raspberry Pi Zero W, is required.
 
-\subsubsection{Garbage collection}
+\subsubsection{Garbage Collection}
 Garbage collection is the practice of freeing inaccessible heap objects from memory automatically, instead of forcing the programmer to explicitly deallocate resources.
 
 The use of these systems is wide-spread, especially in scripting languages. They lower the entry barrier for new programmers and reduce cognitive load for existing ones. Sacrificing a fraction of overall processing time to the collection process is required but does not necessarily result in overall program slowdown. 
 
 Matthew Hertz and Emery D. Berger have conducted comparisons between the performance of manual memory management and garbage collection in programs executed by the Java Virtual Machine. They came to the conclusion that five times as much memory as required can lead to identical or slightly better runtime performance than that of manual memory management solutions \cite{garbage-collection-vs-manual}. 
 
-Manually managed only solutions are traditionally preferred in mission critical applications because of the overhead garbage collection introduces in situations where memory is limited. Languages that do not require a garbage collector are therefore favored.
+Manually managed only solutions are traditionally preferred in mission critical applications because of the overhead garbage collection introduces in situations where memory is limited. Languages that do not require a garbage collector are therefor favored.
 
 \subsubsection{C interoperability}
-While the goal of this diploma thesis is to actively avoid C, it is often necessary to interface with existing C code. The reimplementation of closed source libraries or vast existing code-bases is out of the scope of this project, so a stable and widely adopted way of using or generating C bindings is required.
+While the goal of this diploma thesis is to actively avoid C, it is often necessary to interface with existing C code. The reimplementation of closed source libraries or vast existing code-bases is out of the scope of this project, therefor a stable and widely adopted way of using or generating C bindings is required.
 
-\subsubsection{Official package manager}
+\subsubsection{Official Package Manager}
 Package managers provide the ability to install, upgrade, configure, and remove software packages. They simplify dependency management and encourage the usage of existing libraries that provide required functionality. 
 
 Frictionless package management can lead to significantly higher overall code quality in a language ecosystem, because there is no need for constant reimplementation of functionality that is already present in existing packages. 
 
 Languages with an official package management solution are preferred.
 
-\subsection{Programming languages} % https://insights.stackoverflow.com/survey/2017
-A set of languages that compile to machine code was chosen based on the "Most Popular" and "Most Loved, Dreaded, and Wanted" categories of the 2017 Stack Overflow Developer Survey.
+\subsection{Programming Languages} 
+A set of languages that compile to machine code was chosen based on the "Most Popular" and "Most Loved, Dreaded, and Wanted" categories of the 2018 Stack Overflow Developer Survey \cite{stackoverflow-survey}.
 
 Interpreted languages were not considered because they are not fit for performant low level operation without calling into compiled code.
 
@@ -51,10 +51,10 @@ Version 1.0 was released in March 2012.
 \begin{description} 
 \item [Garbage collection]
 Go is a garbage collected language. The GC implementation is optimized for very low pause times at the expense of execution performance. 
-\item [C interoperability] % https://golang.org/cmd/cgo/
-cgo is the official way of creating Go packages that call C code. It is not intended to be used in tandem with the built-in cross compilation feature of the Go compiler as it is automatically disabled when cross-compiling.
-\item [Official package manager] % https://github.com/golang/dep
-There is currently no official package manager included in the standard Go tool-chain. dep, which is an experimental dependency manager that is intended to become the official tool once version 1.0 is reached, is the most widely used solution. cgo support is not implemented yet.
+\item [C interoperability]
+cgo is the official way of creating Go packages that call C code \cite{cgo-docs}. It is not intended to be used in tandem with the built-in cross compilation feature of the Go compiler as it is automatically disabled when cross-compiling.
+\item [Official package manager]
+There is currently no official package manager included in the standard Go tool chain. dep, which is an experimental dependency manager that is intended to become the official tool once version 1.10 is reached \cite{dep-roadmap}, is the most widely used solution. cgo support \cite{dep-cgo} is not implemented yet.
 \end{description}
 
 \subsubsection{Rust}
@@ -63,8 +63,8 @@ Version 1.0 was released in May 2015.
 \begin{description} 
 \item [Garbage collection]
 Rust enforces memory safety through a system of ownership that is validated at compile time. Reference counting is used if shared ownership is required.
-\item [C interoperability] % https://github.com/rust-lang-nursery/rust-bindgen
-bindgen automatically generates bindings to C and C++ code during compile time. Cross-compilation is supported.
+\item [C interoperability]
+bindgen \cite{bindgen} automatically generates bindings to C and C++ code during compile time. Cross-compilation is supported.
 \item [Official package manager]
 Cargo is Rust's official package manager and build system. It natively supports a variety of target architectures.
 \end{description}
@@ -74,7 +74,7 @@ Swift development was initially started by Chris Lattner at Apple in 2010. It is
 4.0, which is the current version, was released in September 2017. 
 \begin{description} 
 \item [Garbage collection]
-Swift uses Automatic Reference Counting instead of a tracing garbage collector. Reference count incrementation and decrementation instructions are inserted into object code at compile-time. Execution pauses are circumvented by this technique, but overall program slowdown due to the reference count management overhead is incurred.
+Swift uses Automatic Reference Counting instead of a tracing garbage collector. Reference count incrementation and decrementation instructions are inserted into object code at compile-time \cite{llvm-arc}. Execution pauses are circumvented by this technique, but overall program slowdown due to the reference count management overhead is incurred.
 \item [C interoperability]
 C interoperability is built into the language itself.
 \item [Official package manager]

@@ -3,23 +3,32 @@
 \graphicspath{{images/}} 
 \usepackage[margin=3cm]{geometry} % 3cm border
 \usepackage{amsmath}
-\usepackage{siunitx}
+\usepackage[binary-units=true]{siunitx}
 \usepackage{minted}
+\usepackage[backend=bibtex,style=verbose,backref=true,sorting=none]{biblatex}
+\usepackage[final]{pdfpages}
+%\usepackage{footnote}
+% \makesavenoteenv{figure}
 
 \renewcommand{\author}[1]{{\bf Author:} #1\\}
+
 \DeclareSIUnit\year{yr}
 
 \makeglossaries
 \loadglsentries{text/glossary}
 
-\newcommand{\projectTitle}{Pigeon 9000}
+\newcommand{\projectTitle}{Autonomous Soft Landing Rocket Simulator}
+
+\addbibresource{references.bib}
+
+\let\cite\footcite
 
 \begin{document}
 
 
 \title{\projectTitle}
 \abteilung{Informatik}
-\schwerpunkt{Rocket science} % TODO: More serious
+\schwerpunkt{}
 \studienort{Wiener Neustadt}
 \schule{HTBLuVA Wiener Neustadt}
 \schullogo{htl.jpeg}
@@ -31,11 +40,11 @@
 
 \schuelerA{Sebastian SCHAFFLER}
 \evidenzA{5CHIF-18}
-\subthemaA{Construction} % TODO: More percise
+\subthemaA{Hardware Konstruktion, Entwicklung Kontrollalgorithmen} 
 
 \schuelerB{Philip TRAUNER}
 \evidenzB{5CHIF-21}
-\subthemaB{Programming} % TODO: More percise
+\subthemaB{Hardware Konstruktion, Entwicklung Back-End}
 
 \schuelerC{}
 \evidenzC{}
@@ -54,25 +63,30 @@
 \maketitle
 \tableofcontents
 
-\include{text/preamble}
+\includepdf[fitpaper=true, pages=-]{Diplomarbeit-Formular-Flat.pdf}
+
 \include{text/summary}		
-\include{text/abstract}		
+\include{text/abstract}
 \include{text/logo}	
 
 \mainmatter
 
 \include{text/introduction}
+\include{text/project-management}
 \include{text/prototypes}
 \include{text/end}
 
-\appendix
-\printglossaries
+\include{text/acknowledgment}
 
-\clearpage
-\addcontentsline{toc}{chapter}{\bibname}
+%\appendix
+%\printglossaries
 
-\bibliographystyle{bababbrv} 
-\bibliography{references}
+%\addcontentsline{toc}{chapter}{\bibname}
+
+%\bibliographystyle{bababbrv} 
+%\bibliography{references}
+
+\printbibliography
 
 \include{text/messbox}
 

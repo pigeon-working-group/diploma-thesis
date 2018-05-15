@@ -1,9 +1,9 @@
-\section{Hardware abstraction layer}
+\section{Hardware Abstraction Layer}
 \author{Philip Trauner}
 
-\subsection{Controlling the valve}
+\subsection{Controlling the Valve}
 Experimentation with test programs revealed that a full on/off cycle of the valve, taking the latency introduced by the relay into account, takes at least \SI{70}{\milli\second} according to the their respective documentations. 
-\begin{figure}[h]
+\begin{figure}[H]
 \begin{align*}
     \SI{19}{\milli\second} + \SI{10}{\milli\second} &=\SI{29}{\milli\second} && \text{Valve switch on time} + \text{Relay switch on time} \\
     \SI{36}{\milli\second} + \SI{5}{\milli\second}  &=\SI{41}{\milli\second} && \text{Valve switch off time} + \text{Relay switch off time}\\
@@ -16,7 +16,7 @@ A simple valve control program was written to verify this calculation. Values as
 
 After these tests were conducted, a low latency way of interacting with the GPIO pins on the Raspberry Pi from within Rust had to be found. A project search on GitHub revealed multiple libraries that offer this functionality. 
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{llll}
 \textbf{Library} & \textbf{Access method} & \textbf{Maintained} & \textbf{Documented} \\
@@ -31,33 +31,37 @@ rust-sysfs-gpio  & sysfs                  & Yes                 & Yes
 
 sysfs is a pseudo Linux file system that provides information about kernel subsystems, hardware devices, and device drivers in addition to the ability to configure them. It lives in userspace and can not be relied upon if timing of operations is required to be deterministic. 
 
-rust-sysfs-gpio \cite{rust-sysfs-gpio} was selected as the GPIO library because of its widespread usage, its detailed documentation and a high commit frequency addressing issues reported by users. The access method was not deemed relevant at this point in time because the fact that sysfs operation timings are not deterministic was not known until first experiments were conducted. While timing was not an issue during these tests, the decision was made to switch to a direct memory access solution because of concerns regarding future situations in which precise operation would be required. 
+rust-sysfs-gpio \cite{rust-sysfs-gpio} was selected as the GPIO library because of its widespread usage, its detailed documentation and a high commit frequency addressing issues reported by users. The access method was not deemed relevant at this point in time because the fact that sysfs operation timings are not deterministic was not known until after first experiments were conducted. While timing was not an issue during these tests, the decision was made to switch to a direct memory access solution because of concerns regarding future situations in which precise operation would be required. 
 
 rppal \cite{rppal} was then chosen as the GPIO read/write solution because it was the only other well documented library that was still being maintained and uses direct memory writes to access the pins.
 
 
-\section{Advanced software control}
+\section{Advanced Software Control}
 \subsection{Concept}
 Mission Control like facilities have the ability to correct the state of a rocket during flight by communicating with core components over predefined protocols. To allow for fast experimentation it was determined that this approach would be adopted for the first prototype.
 
 A client/server architecture, networked over the Transmission Control Protocol, was chosen to accomplish this design goal because the hardware setup guarantees that a stable Ethernet connection is present at all times. Additionally, client software can also be executed on the same microcomputer that the server is running on.
 
-\subsection{Toolchain setup}
+\subsection{Toolchain Setup}
 The additional compiler complexity introduced by the borrow checker and the current omission of incremental compilation is known to cause significantly slower Rust compile times in comparison to similar languages. This led to the decision to forgo compiling code directly on the Raspberry Pi Zero W, because it was assumed that the incurred slowdown would negatively impact development speed, therefor a cross-compilation toolchain had to be utilized.
 
 Rust's standard library relies on the C standard library to access operating system functionality, therefor a linker is required to generate executables or libraries. Instead of bundling a linker in the default toolchain, Rust chooses to depend on an external one, in most cases the linker included with the operating system. These often only support the processor architecture of the computer they are executed on and can therefor not be used for other architectures, hence the need for target specific linkers.
 
-The main development platform of this diploma thesis is macOS. Due to fact that owning a Mac is legally necessary to run this largely proprietary operating system it was decided against implementing the toolchain on top of it and instead provide documentation and setup scripts for Linux-based operating systems which could then be virtualized on unsupported hosts. 
+The main development platform of this diploma thesis is macOS. Due to the fact that owning a Mac is legally necessary to run this largely proprietary operating system it was decided against implementing the toolchain on top of it and instead provide documentation and setup scripts for Linux-based operating systems which could then be virtualized on unsupported hosts. 
 
 VirtualBox was chosen as the recommended virtualization software because it is free for personal use and available on most major operating systems. Folder sharing is utilized to pass the project folder through to the guest and the ability to forward ports is used to expose Secure Shell to the host.
 
-Debian 9 "Stretch" was selected as the recommended Linux distribution because of existing experience with the packaging ecosystem and the assumption that the pre-built toolchains, that are available through the default software repositories, would produce binaries that can be executed on ARMv6 based machines. Cargo, Rust’s Package Manager, was therefor configured to use the linker found in the "crossbuild-essential-armhf" package.
+Debian 9 "Stretch" was selected as the recommended Linux distribution because of existing experience with the packaging ecosystem and the assumption that the pre-built toolchains, that are available through the default software repositories, would produce binaries that can be executed on ARMv6 based machines. 
 
-The ability to execute a pre-defined command when connecting to a SSH server is used to redirect the standard output streams of the Linux guest system to unsupported hosts. This allows for seamless integration into the host terminal. Secure Copy is used to transfer the generated binaries to the target platform.
+Advanced build settings, like specifying a custom linker, can be altered by creating a file called \texttt{config} and placing it in a folder named \texttt{.cargo} which resides in the base directory of a Rust project. 
+Cargo, Rust’s Package Manager, uses these project specific settings to override the global configuration located in the \texttt{\~{}/.cargo} directory. 
+Cargo was configured to use the linker found in the "crossbuild-essential-armhf" package. 
+
+The ability to execute a pre-defined command when connecting to a SSH server is used to redirect the standard output streams of the Linux guest system to unsupported hosts. This allows for seamless integration into the host terminal. \texttt{scp} is used to transfer the generated binaries to the target platform.
 
 Commonly used commands are defined as Makefile targets and environment variables are used for configuration.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \begin{minted}{make}
 all: build transfer
 
@@ -76,14 +80,14 @@ transfer:
 \caption{Shortened version of Makefile based cross-compilation solution. The "build" target is used to cross-compile code on a Linux-based operating system. The "transfer" target is used to transfer the generated binaries onto a target system.}
 \end{figure}
 
-Compilation and transmission of the generated binaries to the Raspberry Pi Zero W was now possible through the invocation of "make all" on a macOS system, however executing the binaries on the Pi always resulted in a segmentation fault. After lengthy investigation it was discovered that the toolchain provided by Debian only supports ARMv7 targets. This led to the decision to migrate to a Raspberry Pi 3 Model B, which utilizes an ARMv7 processor, because one was already available and reevaluate ARMv6 support once it was required.
+Compilation and transmission of the generated binaries to the Raspberry Pi Zero W was now possible through the invocation of \texttt{make all} on a macOS system, however executing the binaries on the Pi always resulted in a segmentation fault. After lengthy investigation it was discovered that the toolchain provided by Debian only supports ARMv7 targets. This led to the decision to migrate to a Raspberry Pi 3 Model B, which utilizes an ARMv7 processor, because one was already available and reevaluate ARMv6 support once it was required.
 
 \subsection{Implementation}
-The server is modeled after the Unix daemon concept and is therefor named 9000d. It is implemented in Rust. The client is referred to as controller and can be written in any programming language that supports sockets, however Python is used exclusively because its robust standard library allows for quick iteration and experimentation.
+The server is modeled after the Unix daemon concept and is therefor named 9000d. It is implemented in Rust. The client is referred to as controller and can be written in any programming language that supports TCP sockets. However Python is used exclusively because its robust standard library allows for quick iteration and experimentation.
 
 The thrust generated by the valve can be controlled by sending a state to the daemon. A state contains the "operation time" and the "release time", which are time-spans defined in milliseconds. These values are used to perform pulse-width modulation on the valve. PWM is handled in software instead of utilizing the hardware PWM ports on the Raspberry Pi 3 Model B because those can only be configured over sysfs, which does not guarantee deterministic timing. Additionally, a power flag is present which indicates if the valve should be controlled at all. States are formatted in JSON \cite{json} because of its broad availability across many programming languages. It is represented as human readable text instead of binary messages, which is useful for debugging purposes. 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 
 \includegraphics[width=155mm]{controller_pushes_state_to_pigeond}
@@ -91,25 +95,25 @@ The thrust generated by the valve can be controlled by sending a state to the da
 \caption{A controller transmitting a state to the daemon. A state contains all necessary instructions for operation. "operation time" and "release time" are time-spans defined in milliseconds, power indicates if the valve should be controlled.}
 \end{figure}
 
-The daemon uses serde \cite{serde} to deserialize JSON to Rust structs because its the most widely used solution available.
+The daemon uses serde\_json to deserialize JSON to Rust structs because its the most widely used solution available.
 
-\section{Physical user interface}
-\author{Sebastian Schaffler}
+\section{Physical User Interface}
+\author{Philip Trauner}
 
 To test the daemon/controller approach dictated by the software architecture it was decided to model the physical user interface as a controller.
 
 \subsection{Basic}
 Instead of directly approaching autonomous rocket control it was decided to experiment with physical user interfaces first. This approach was chosen to test the practicality of the software design and to provide a version that can be used for demonstrations with human interaction. 
 
-A rotary encoder \cite{rotary-encoder} combined with a button was intended as the physical interface of this prototype version because it did not require an analog to digital converter, which would have had to be acquired. After some experimentation with the component it began emitting nonsensical values. This was interpreted as a component failure. 
+A rotary encoder combined with a button was intended as the physical interface of this prototype version because it did not require an analog to digital converter, which would have had to be acquired. After some experimentation with the component it began emitting nonsensical values. This was interpreted as a component failure. 
 
-A linear slide was then chosen to directly control the thrust generated by the valve. To determine the slide position an analog to digital converter was now necessary. A MCP3008 \cite{mcp3008} was chosen because a Python library \cite{mcp3008-library} to interact with its 8 input channels was already available. 
+A linear slide was then chosen to directly control the thrust generated by the valve. To determine the slide position an analog to digital converter was now necessary. A MCP3008 was chosen because a Python library \cite{mcp3008-library} to interact with its 8 input channels was already available. 
 
-To obtain a millisecond value from the linear slide its position is converted to a percentage based against the full slide length and then multiplied by a constant timespan of \SI{100}{\milli\second}. The button is used to alternate between "operation time" and "release time" mode. 
+To obtain a millisecond value from the linear slide. its position is converted to a percentage based against the full slide length and then multiplied by a constant timespan of \SI{100}{\milli\second}. The button is used to alternate between "operation time" and "release time" mode. 
 
-This concept worked but constantly switching between modes to changes the times in proportion to each other was deemed not user friendly, instead the mode switching idea was reused to modify the previously constant time, referred to as "cycle time", and a proportional ratio between "operation time" and "release time" called "operation ratio".
+This concept worked but constantly switching between modes to change the times in proportion to each other was deemed not user friendly, instead the mode switching idea was reused to modify the previously constant time, referred to as "cycle time", and a proportional ratio between "operation time" and "release time" called "operation ratio".
 
-\begin{figure}[h]
+\begin{figure}[H]
 \begin{align*}
     ot &=ct * or && \text{operation time} \\
     rt &=ct * (1 - or) && \text{release time} \\ \\
@@ -119,9 +123,9 @@ This concept worked but constantly switching between modes to changes the times 
 \caption{"operation time" and "release time" calculation. "cycle time" is the timespan in which a full on/off switch cycle takes place. "operation ratio" is a percentage describing the proportion "operation time" and "release time" in the specified "cycle time".}
 \end{figure}
 
-This concept was originally developed for the rotary encoder and transferred over to the slide, which brought some issues with it. The physical properties of the linear slide don't allow setting two distinct values at the same time. This is why the button was introduced, however mode switching would led to an immediate value override of the current mode with the value of the previous mode.
+This concept was originally developed for the rotary encoder and transferred over to the slide, which brought some issues with it. The physical properties of the linear slide do not allow setting two distinct values at the same time. This is why the button was introduced, however mode switching would lead to an immediate value override of the current mode with the value of the previous mode.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 
 \includegraphics[height=60mm]{sketch_xx_button_and_slide}
@@ -131,8 +135,8 @@ This concept was originally developed for the rotary encoder and transferred ove
 \end{figure}
 
 \subsection{Improved}
-To combat the issues of the basic physical user interface it was decided to introduce a second linear slide, which was not available at the time the basic version was implemented, to enable simultaneous adjustment of "cycle time" and "operation ratio". The button was reused to toggle valve power on and off.
+To combat the issues of the basic physical user interface, it was decided to introduce a second linear slide which was not available at the time the basic version was implemented to enable simultaneous adjustment of "cycle time" and "operation ratio". The button was reused to toggle valve power on and off.
 
 A Python 3 library was written to simplify working and transmission of states after it became apparent that the same code was repeated several times. It provides a representation of states as objects which can be sent to the daemon without any knowledge of the underlying protocol. 
 
-Hovering the corpus at a specific point along the table leg was not only possible but reproducible with this approach.  
+Hovering the corpus at a specific point along the table leg was not only possible but rather easily reproducible with this approach.  

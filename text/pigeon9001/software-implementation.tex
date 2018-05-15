@@ -1,15 +1,500 @@
-\section{Software implementation}
+\section{Software design}
 \author{Philip Trauner}
 
-\subsection{Toolchain setup}
-The development toolchain of the first prototype lacked the ability to cross-compile code for ARMv6 based microcomputers like the Raspberry Pi Zero W because integration efforts failed due to absence of pre-compiled ARMv6 cross-compilers in the Debian package repositories. After numerous tries of building a GCC version that targets ARMv6 were unsuccessful, a git repository by the Raspberry Pi Foundation was found that contained a complete ARMv6 toolchain.
+\subsection{Goal}
+The main software design goal of Pigeon 9000 was to enable quick experimentation in order to study the feasibility of hovering an air pressure powered model rocket demonstrator. This objective was achieved by splitting the control logic into two different programming languages and modeling their respective roles after a client/server architecture. 
+Python's "batteries included" standard library and the support of a wide variety of sensors through packages released by its community made it a fitting prototyping language for use as the client. Rust's emphasis on concurrency without data races and its high execution speed in comparison to Python allowed for the implementation of a solid server, with the ability to control the singular valve of Pigeon 9000 based on instructions received from the client, referred to as controller. The JSON-based API that was devised to allow for communication to take place between peers also fitted the intended experimentation oriented workflow well.
 
-\subsection{Temporary demonstration software}
-A demonstration of the second prototype was scheduled to be shown at the open door day of Höhere Technische Bundes- Lehr- und Versuchsanstalt Wiener Neustadt. Hardware construction was largely finished at this point but 9001d was not yet capable of receiving control instructions. It was decided to create a temporary control solution that would make use of the linear slide based user interface located on the first prototype to control each valve of Pigeon 9001 separately. 
+\begin{figure}[H]
+\centering
 
-Instead of implementing the temporary daemon in Rust, 9000d was translated to Python in an effort to quickly retrofit the ability to drive two valves in the existing control loop. This was done because neither scalability nor performance where a concern. To achieve this the state changes emitted by the controller client running on the the first prototype had to be modified to contain one "operation ratio" per valve. Additionally it was necessary to move the valve control logic into two separate threads that consume timing queues filled by the control loop. 
+\includegraphics[width=150mm]{9000d-retrospect}
+\caption{Visualization of 9000d implementation. A simplex JSON API is used to send control instruction from the controller, implemented in Python, to the daemon implemented in Rust.}
+\end{figure}
 
-\begin{figure}[h]
+Pigeon 9000 proved that programmatically releasing air pressure to control a guide mounted object is possible, therefor the software design focus was shifted away from experimentation. It was decided that instead of spanning the control logic over two languages, a monolithic control loop implemented entirely in Rust would be used for the second prototype. 
+The advantages of this approach include more deterministic operation timings, that can be achieved by eliminating the previously used API layer, which unavoidably introduced additional latency. Additionally, the ability to fully embrace the memory safety and concurrency features of the Rust compiler throughout the entire code-base is gained.
+
+\subsection{Sensor Data Retrieval Concept}
+Pigeon 9000 only utilizes two sensors in its hovering configuration that are both connected to a singular MCP3008 A/D converter. They only provide one data channel each. Additionally, their response times are equal and also negligible, as thorough testing revealed. The A/D converter is connected directly to a Raspberry Pi 3, that also controls the valve.
+
+The hardware setup of the second prototype necessitates a completely different approach to sensor data retrieval. Four vastly different sensors, including an infrared distance sensor, a pressure sensor, a combined accelerometer/magnetometer/gyroscope and a power button, are mounted either to the corpus or installed on the baseplate. They output data on up to four channels and have to be read from at different rates. Response time and data type are also different across all sensors. 
+
+There is no wired connection between the sensors that reside on the base plate and the Raspberry Pi Zero W on the corpus, that serves as the valve controller. They are instead connected to a secondary Raspberry Pi which then connects to a wireless access point over WiFi to which the first one is also connected, creating a local network. 
+
+This was a necessary compromise because it was assumed that the weight of additional cables would have significantly impacted flight performance. The average latency introduced by this wireless approach was measured to amount to \SI{20}{\milli\second}, which was considered acceptable as only the pressure sensor and the power button would be affected by the delay.
+
+Nevertheless, it was decided that all sensors should be treated equally, no matter what kind of connection, while introducing little to no additional latency when querying ones that are directly connected to the Raspberry Pi Zero W on the corpus. 
+It was also deemed necessary that reading sensor values in the control loop should not result in a readout, with possibly indeterministic length, but instead provide the last value obtained by continuously polling the requested sensor in the background. 
+Additionally, sensor readouts should not be provided as raw values in arbitrary units, but instead as the appropriate SI value in accordance to the respective sensor, effectively creating a black box from the perspective of the control loop. 
+
+The ability to stream all sensor data to a remote monitoring interface, without negatively impacting control loop performance was also envisioned for the second prototype, because it would aid development efforts by providing a visualization of all sensor data in correlation to one another.
+
+\begin{figure}[H]
+\centering
+
+\includegraphics[width=150mm]{sensor-programs}
+\caption{Planned design of Pigeon 9001's software. The main consumer has to simultaneously receive sensor data from eight different channels provided by four sensors. The wireless monitoring interface is not as important as the timely and chronologically accurate delivery of sensor data to the control loop, and is therefor considered a low-priority consumer.}
+\end{figure}
+
+\newpage
+
+\section{Toolchain Setup}
+\author{Philip Trauner}
+
+The development toolchain of the first prototype lacked the ability to cross-compile code for ARMv6 based microcomputers, like the Raspberry Pi Zero W, due to the absence of pre-compiled ARMv6 cross-compilers in the Debian package repositories. To start development of Pigeon 9001's software, it was deemed necessary to investigate this issue once again. 
+
+\subsection{dockcross}
+After researching possible solutions, dockcross\cite{dockcross} appeared to be a sufficient replacement for ARMv6 as well as ARMv7 cross-compilation. Instead of manually installing a virtualized Debian environment and executing several setup-scripts, as was the case with the 9000d toolchain, it would have allowed for automation of most setup actions.
+
+dockcross, as the name would imply, depends on Docker, which is an operating-system-level virtualizer that makes use of the resource isolation features in more recent Linux versions. Instead of relying on hardware virtualization technologies like AMD-V or VT-x, the kernel of the host operating system is used to provide a user-space for each container, in which one or more applications can be executed. They are essentially chroots with better isolation from the main user-space.
+NT-based operating systems like Windows, and Darwin distributions like macOS do not provide the required functionality to enable containerization, it is therefor necessary to virtualize a Linux distribution on the host-machine which is then used to run containers. 
+
+\begin{figure}[H]
+\centering
+
+\includegraphics[width=100mm]{docker-mac-architecture}
+% https://blog.docker.com/2016/03/docker-for-mac-windows-beta/
+\caption{Docker for macOS architecture diagram. HyperKit is the hypervisor used to virtualize an Alpine Linux installation.}
+\end{figure}
+
+The added complexity introduced by this approach can result in errors that are difficult to diagnose and fix. Very frequent and seemingly random Docker crashes on macOS High Sierra 10.13.2 were occurring exclusively during ARMv6 cross-compilation, which resulted in the decision to explore other solutions and forgo relying on dockcross. 
+
+\subsection{crosstool-NG}
+crosstool-NG \cite{crosstool-ng} is an automatic cross-compilation toolchain generator. A curses based GUI, similar to the Linux kernel \texttt{menuconfig} interface, is used to assemble \texttt{.config} files which can then be used to initiate the build process. 
+
+\begin{figure}[H]
+\centering
+
+\includegraphics[width=100mm]{ct-ng-menuconfig}
+\caption{The curses based configuration utility of crosstool-NG. Toolchains are tailored towards a specific platform by adjusting various settings split into 10 categories.}
+\end{figure}
+
+After cross-referencing various configuration files and many build failures, a working configuration was obtained by modifying the \texttt{armv6-rpi-linux-gnueabi} template shipped with crosstool-NG.
+
+After approximately one hour of building on a virtualized Debian 9 "Stretch" installation, a toolchain with a size of roughly \SI{600}{\mega\byte} was generated. Due to the lack of an online storage facility that would still be accessible multiple years down the road, it was decided that a different solution had to be found to allow for the possibility of continued work on the project by another team.
+
+\subsection{raspberrypi/tools}
+Finally, a git repository by the Raspberry Pi Foundation was found on GitHub \cite{raspberrypi-tools} that contained a complete pre-compiled ARMv6 toolchain which again necessitated a virtualized Linux environment. Debian 9 "Stretch" was chosen as the recommended distribution because of existing experience and the availability of an ARMv7 toolchain in its default package repository, which could be used to simultaneously support both processor architectures. 
+
+A shallow git clone of the repository resulted in a \SI{1.2}{\giga\byte} download that also included various other unneeded tools by the Raspberry Pi foundation. The clone process took an unacceptably long \SI{2}{\hour} on a reasonably fast internet connection due to the way \texttt{git} stores binary objects when no large file storage solution is used and many modifications have been made to the files contained in the repository. To circumvent this problem the SVN support of GitHub was used to selectively export the toolchain while excluding all other files. This approach reduced the download time to \SI{10}{\minute}.
+
+\begin{figure}[H]
+\begin{verbatim}
+svn export https://github.com/raspberrypi/tools/trunk/arm-bcm2708/... \
+armv6-toolchain
+\end{verbatim}
+\caption{Download of ARMv6 toolchain from GitHub. git does not support selective checkout, therefor the remote path exporting capabilities of SVN are used instead.}
+\end{figure}
+
+Upon first execution of the included linker a "\texttt{No such file or directory.}" error was emitted by Bash. It was initially believed that \texttt{vboxsf}, the filesystem used to share folders between host-machines and guests inside VirtualBox, was at fault. To prove this theory the repository was cloned once again on real hardware with the same distribution installed, where the same error message was observed. After lengthy investigation the \texttt{file} utility revealed that all toolchain binaries were 32bit ELF files.
+
+\begin{figure}[H]
+\begin{verbatim}
+arm-linux-gnueabihf-gcc: ELF 32-bit LSB shared object, Intel 80386, 
+version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, 
+for GNU/Linux 2.6.32, ...
+\end{verbatim}
+\caption{Output of \texttt{file} utility when run against \texttt{arm-linux-gnueabihf-gcc}. The dynamic linker, \texttt{/lib/ld-linux.so.2}, can not be found and therefor the binary can not be executed.}
+\end{figure}
+
+The 64bit version of Debian does not ship with a 32bit dynamic linker and therefor can not execute any 32bit binaries until all required shared libraries are installed, most importantly \texttt{libc6}. \texttt{dpkg}, which is the low-level package management utility used by Debian, provides a flag to include packages compiled for foreign processor architectures in its active catalog, in this case i386. Subsequently invoking \texttt{apt} or \texttt{apt-get} allows for the installation of these packages by appending \texttt{:<arch>} to the package name. The linker could now be executed and a setup script was then written to automate the process of downloading the toolchain and installing the required 32bit support libraries.
+
+After this issue was resolved it was discovered that a 64bit version of the toolchain was also located in the repository. Due to the inherent speed benefit of executing binaries with bitness equivalent to the operating system and processor, it was decided to modify the previously written setup script to bootstrap the 64bit toolchain instead. This was done by discarding the installation of all 32bit support libraries and changing the SVN import path.
+
+Finally, a new table was added to the \texttt{.cargo/config} file that was previously used in the toolchain version that built Pigeon 9000, to support both ARMv6 and ARMv7 cross-compilation.
+
+\begin{figure}[H]
+\begin{minted}{text}
+[target.arm-unknown-linux-gnueabihf]
+linker = ".cargo/armv6-toolchain/bin/arm-linux-gnueabihf-gcc"
+
+[target.armv7-unknown-linux-gnueabihf]
+linker = "/usr/bin/arm-linux-gnueabihf-gcc"
+\end{minted}
+\caption{\texttt{.cargo/config} of the toolchain used for the first prototype with the addition of working ARMv6 support.}
+\end{figure}
+
+\section{Sensor Data Retrieval}
+\author{Philip Trauner}
+
+To fulfill all requirements regarding sensor data acquisition outlined in the software design road map it was decided to separate the control loop from the sensor data retrieval and processing logic.
+Equal treatment of all sensors can then be achieved by developing standalone programs that deal with polling, filtering and conversion of readouts from arbitrary units to SI units for each type of sensor. These programs are referred to as producers. The data they obtain is encoded into a data transmission format which is then put into a networked message queue which adheres to the publisher/subscriber messaging pattern, that is then consumed by 9001d, which is responsible for running the control loop logic.
+This approach will introduce some latency, depending on the choice of data transmission format and message queue, regardless of sensor connection while at the same time granting the flexibility of running producers on different networked computers. In order to keep latency to a minimum, every step from sensor polling to consumption by 9001d has to be thoroughly optimized.
+
+\section{Data Transmission Format}
+\author{Philip Trauner}
+
+To keep serialization and deserialization overhead to a minimum it was decided to devise the data structure necessary for sensor data transmission before choosing a format and consequently a library to accomplish this task. This approach allows for unbiased and meaningful benchmarks, which is important because speed and encoded object size are considered the key characteristics necessary to guarantee fast sensor data transmission.
+
+\begin{figure}[H]
+\centering
+
+\includegraphics[width=90mm]{data-structure}
+\caption{Sensor readout transmission data structure. \texttt{PubType} is an enum. Each variant represents one data channel of a sensor. \texttt{PubMessage} is a struct that is filled with a \texttt{PubType} variant and integral as well es decimal value representations.}
+\end{figure}
+
+Instead of using only one number type to represent an obtained sensor value, it was decided to include an integral and a decimal representation in the data structure to enable faster comparison operations for sensors that only output integers.
+
+The ability to deserialize the transmission format in modern browsers was also deemed a requirement, as it would allow for the possibility of implementing a monitoring interface without the need to re-encode data in a different format. 
+
+\subsection{Serde}
+% https://serde.rs/
+% https://github.com/rust-lang-deprecated/rustc-serialize
+% https://users.rust-lang.org/t/deprecation-of-rustc-serialize/10485
+% https://github.com/rust-lang/rfcs/blob/8ee535b4fcc8bb22c121ad19a36414f1259397c0/text/1681-macros-1.1.md
+Serde is a development framework that can be used to implement data serialization and deserialization libraries in Rust. \cite{serde} 
+It provides a data model that maps every Rust data structure to one of 27 intermediate types, which can then be used to develop encoding libraries on top of.
+Serde is officially endorsed by the Rust Library Team and replaces rustc-serialize \cite{rustc-serialize-deprecation}, which was formerly part of the standard library. 
+
+Serde has even become popular enough to warrant changes to the language itself, as detailed in Rust RFC \#1681 \cite{rfc-1681}, which describes the addition of custom derive. 
+Derive is a compiler feature that can be used to auto-generate trait implementations. Examples include \texttt{Eq} for comparison operations, \texttt{Debug} for printable object representations, or \texttt{Default} to provide templates for the creation of empty data type instances. Traits are similar to interfaces in other object oriented programming languages like C\# or Java.
+
+Serde uses a combination of Rust's trait and macro systems to generate serialization and deserialization code at compile time. Runtime reflection, which by definition has to happen during runtime, can be completely avoided by using this approach.
+
+\begin{figure}[H]
+\begin{minted}{rust}
+enum PubType {
+    PressureSensorTemperature,
+    // ...
+}
+#[allow(non_upper_case_globals, unused_attributes, unused_qualifications)]
+const _IMPL_SERIALIZE_FOR_PubType: () = {
+    impl _serde::Serialize for PubType {
+        fn serialize<__S>(&self, __serializer: __S,
+        ) -> _serde::export::Result<__S::Ok, __S::Error>
+        where __S: _serde::Serializer,
+        {
+            match *self {
+                PubType::PressureSensorTemperature => {
+                    _serde::Serializer::serialize_unit_variant(__serializer,
+                        "PubType", 0u32, "PressureSensorTemperature",
+                    )
+                },
+                // ...
+            }
+        }
+    }
+};
+\end{minted}
+\caption{Shortened except of serialization code auto-generated by Serde. A \texttt{\#[derive(Serialize)]} annotation indicates that the data structure should be serializeable. \texttt{cargo expand} was used to expand all macros.} 
+\end{figure}
+
+\subsection{Data Formats}
+% https://serde.rs/ Data fromats
+A variety of data formats is recommended in Serde's documentation. All formats that support serialization and deserialization were tested by encoding data that conforms to the previously specified format. They were consequently benchmarked to determine the quickest solution that generates the smallest output. 
+
+\subsubsection{bincode}
+bincode is a binary format used most prominently for inter-process communication within Mozilla's Servo rendering engine. Encoded object are the same size as their in-memory counterparts. Enumeration variants are encoded as unsigned 32bit integers and no field names are included, which necessitates knowledge of the underlying data structure for decoding. No JavaScript decoding libraries exist, but due to the simplicity of the format it is sufficient to wrap the \texttt{ArrayBuffer} that contains the encoded object with an \texttt{Int16Array}. Decimal types can not be obtained automatically with this approach, which was deemed acceptable. 
+
+\begin{figure}[H]
+\begin{minted}{json}
+[
+	1, 0, 0, 0, 100, 0, 205, 204, 200, 66
+]
+\end{minted}
+\caption{Encoded data generated by bincode represented as an unsigned 8bit integer array. No field names are included, therefor knowledge of the data structure is necessary to decode objects. bincode produces the smallest output out of all tested data formats.} 
+\end{figure}
+
+\subsubsection{bson}
+% http://bsonspec.org/spec.html
+% https://www.mongodb.com/
+bson implements the Binary JavaScript Object Notation 1.1 \cite{bson-spec} data format that was originally created for use in the document based MongoDB database. Decoding requires no knowledge of the data structure as field names are included, which naturally negatively impacts the size of encoded objects. A JavaScript decoding library is available.
+\begin{figure}[H]
+\begin{minted}{json}
+[
+	73, 0, 0, 0, 2, 112, 117, 98, 95, 116, 121, 112, 101, 0,
+	23, 0, 0, 0, 80, 114, 101, 115, 115, 117, 114, 101, 83, 
+	101, 110, 115, 111, 114, 80, 114, 101, 115, 115, 117, 114, 
+	101, 0, 16, 105, 110, 116, 101, 103, 114, 97, 108, 0, 100, 
+	0, 0, 0, 1, 100, 101, 99, 105, 109, 97, 108, 0, 0, 0, 0, 
+	160, 153, 25, 89, 64, 0
+]
+\end{minted}
+\caption{Encoded data generated by bson represented as an unsigned 8bit integer array. Field names are included and enumeration variants are expressed as strings, therefor no knowledge of the data structure is necessary to decode objects. Portability is emphasized at the cost of overall size.} 
+\end{figure}
+
+\subsubsection{serde\_pickle}
+serde\_pickle implements version 0 to 4 of the largely Python-specific pickle binary data format. The reference implementation written in Python explicitly discourages deserialization of data obtained from untrusted sources, but because the Rust version is only very loosely based off its code and no inherent part of the specification demands code execution when dealing with primitive data types this was not deemed concerning. Field names are included in encoded data and a JavaScript library with the ability to decode "pickled" data is available.
+\begin{figure}[H]
+\begin{minted}{json}
+[
+	128, 3, 125, 40, 88, 8, 0, 0, 0, 112, 117, 98, 95, 116, 121, 
+	112, 101, 88, 22, 0, 0, 0, 80, 114, 101, 115, 115, 117, 114, 
+	101, 83, 101, 110, 115, 111, 114, 80, 114, 101, 115, 115, 
+	117, 114, 101, 133, 88, 8, 0, 0, 0, 105, 110, 116, 101, 103, 
+	114, 97, 108, 77, 100, 0, 88, 7, 0, 0, 0, 100, 101, 99, 105, 
+	109, 97, 108, 71, 64, 89, 25, 153, 160, 0, 0, 0, 117, 46
+]
+\end{minted}
+\caption{Encoded data generated by serde\_pickle represented as an unsigned 8bit integer array. Field names are included and enumeration variants are represented as strings. Output generated by serde\_pickle is the largest out of all tested data formats.} 
+\end{figure}
+
+\subsubsection{serde\_cbor}
+% https://tools.ietf.org/html/rfc7049
+Concise Binary Object Representation, abbreviated as CBOR, is a binary data format based of the JSON data model. serde\_cbor implements its specification as detailed in RFC 7049 \cite{rfc-7049} fully. Names are included for every field and enumeration variants are properly serialized as strings. Libraries to decode CBOR in JavaScript are available.
+\begin{figure}[H]
+\begin{minted}{json}
+[
+	163, 104, 112, 117, 98, 95, 116, 121, 112, 101, 118, 80, 
+	114, 101, 115, 115, 117, 114, 101, 83, 101, 110, 115, 111, 
+	114, 80, 114, 101, 115, 115, 117, 114, 101, 104, 105, 110, 
+	116, 101, 103, 114, 97, 108, 24, 100, 103, 100, 101, 99, 
+	105, 109, 97, 108, 250, 66, 200, 204, 205
+]
+\end{minted}
+\caption{Encoded data generated by serde\_cbor represented as an unsigned 8bit integer array. Field names are included and enumeration variants are serialized as strings. Encoded data size is comparable to bson.} 
+\end{figure}
+
+\subsubsection{ron}
+% https://github.com/ron-rs/ron/wiki/Specification
+ron implements the text-based Rusty Object Notation format which is primarily inspired by JSON. Its specification \cite{ron-spec} is not yet completed and its supposed advantages over JavaScript Object Notation, namely support for comments and ordered maps, are not beneficial for this project. No JavaScript decoding library is available.
+\begin{figure}[H]
+\begin{minted}{json}
+"(pub_type:PressureSensorPressure,integral:100,decimal:100.4,)"
+\end{minted}
+\caption{Encoded data generated by rmp\_serde represented as text. Field names are included, therefor it is not necessary to have knowledge of the data structure before decoding. Data size is slightly smaller than equivalent JSON generated by serde\_json due to the exclusion of string delimiters.} 
+\end{figure}
+
+\subsubsection{rmp-serde}
+% https://github.com/msgpack/msgpack/blob/master/spec.md
+MessagePack is a binary format in the vein of JSON. rmp-serde fully implements its specification \cite{rmp-serde-spec}. Data can be encoded as a map with included field names for portability or as a byte vector to remain as compact as possible. rmp-serde does not differentiate between modes when handling enumeration variants, which again necessitates knowledge of the data structure when decoding. A JavaScript decoding library is available.
+
+\begin{figure}[H]
+\begin{minted}{json}
+[
+	147, 146, 1, 144, 100, 202, 66, 200, 204, 205
+]
+\end{minted}
+\caption{Encoded data generated by rmp-serde in byte vector mode represented as an unsigned 8bit integer array. Field names are excluded which necessitates knowledge of the data structure for the purpose of decoding. Message size is comparable but still larger than what bincode would generate due to prefix bytes used for every field.} 
+\end{figure}
+
+\subsubsection{serde\_json}
+% https://tools.ietf.org/html/rfc7159
+serde\_json is the de-facto reference format implementation built by the Serde developers. Serialization and deserialization of JavaScript Object Notation, which is a text based format, as detailed in RFC 7159 \cite{json} are fully supported. Decoding of JSON is implemented in all major browsers, therefor no JavaScript library is necessary.
+
+\begin{figure}[H]
+\begin{minted}{json}
+{
+	"pub_type": "PressureSensorPressure",
+	"integral": 100,
+	"decimal": 100.4
+}
+\end{minted}
+\caption{Encoded data generated by serde\_json represented as text. Field names are included and enumeration variants are represented as strings.} 
+\end{figure}
+
+
+\subsection{Benchmarking}
+After investigating and testing every data format recommended in Serde's documentation it was assumed that bincode would be the best choice according to the previously defined requirements. To prove this theory it was decided to benchmark all data formats by performing 100000 encoding and decoding operations each and timing the results of five consecutive runs. 
+
+\begin{figure}[H]
+\begin{minted}{rust}
+const RUNS: usize = 100_000;
+
+fn main() {
+    let msg = PubMessage {
+        pub_type: PubType::PressureSensorPressure,
+        integral: 100,
+        decimal: 100.4,
+    };
+    let encoded = ser(&msg).unwrap();
+
+    for _ in 0..RUNS {
+        ser(&msg).ok();
+    }
+    for _ in 0..RUNS {
+        let _: PubMessage = de(&encoded[..]).unwrap();
+    }
+}
+\end{minted}
+% https://github.com/pigeon-working-group/serde-perf
+\caption{Excerpt of benchmarking code \cite{serde-perf}. 100000 serialization runs are followed up by another 100000 deserialization runs.} 
+\end{figure}
+
+After completing the benchmarking code it was directly compiled on a Raspberry Pi Zero W in release mode (rustc 1.24.1), because it was assumed that cross-compiling was not necessary due to the relatively low line count. After two hours and thirteen minutes of continuous compiling, this assumption was deemed wrong. It was therefor decided to exclusively cross-compile Rust code from this point onward.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+Name         & Version & Result        \\ \hline
+bincode      & 1.0.0   & 255.37900ms   \\
+bson         & 0.11.1  & 11233.17490ms \\
+rmp-serde    & 0.13.7  & 537.87365ms   \\
+ron          & 0.2.0   & 6800.01310ms  \\
+serde\_cbor  & 0.8.2   & 2098.64268ms  \\
+serde\_json  & 1.0.11  & 1393.62232ms  \\
+serde-pickle & 0.4.0   & 9482.29006ms 
+\end{tabular}
+\caption{Benchmarking results on a Raspberry Pi Zero W. Each test consists of 100000 serialization and deserialization operations each, which are then averaged over five runs.}
+\end{table}
+
+The benchmarking results confirmed the assumption that bincode would be the best choice to concisely encode and decode data in a timely manner with the only reasonable alternative being rmp-serde. 
+
+\section{Message Queue}
+\author{Philip Trauner}
+
+To fulfill the software design goal of Pigeon 9001, it was determined that a message queue following the publish-subscribe messaging pattern would be the most fitting solution.
+
+\subsection{Requirements}
+\begin{itemize}
+  \item Minimal memory footprint \\
+  Raspberry Pi Zero Ws are only available in a \SI{512}{\mega\byte} memory configuration, which necessitates careful consideration for the memory usage of every single running process.
+  \item In-process architecture instead of broker \\
+  Embeddable Pub/Sub message queues are preferred, due the absence of an additional process that would consume non-deterministic processor time.
+  \item No data persistence necessary \\
+  Sensor readouts should be transmitted as soon as they can be obtained, which often happens more than 100 times a second. Historical values do not directly benefit the control loop and are assumed to impose a performance overhead due to the necessity of writing a log to non-volatile storage. 
+  \item Support for multiple transport protocols including TCP, WebSockets, and Unix domain sockets is preferred \\
+  \begin{itemize}
+  	\item TCP \\
+  	Used for off-corpus sensor data transmission. UDP was also considered as there is no need for the re-transmission of values that could not be successfully delivered the first time around, however no Pub/Sub message queue could be found that supports it as a transport protocol, presumably due to the fact that additional client-side logic would be necessary to discard corrupt messages.
+  	\item UDS \\
+  	% https://www.w3.org/TR/2011/WD-html5-20110113/spec.html
+  	Sensors that are connected directly to the Raspberry Pi responsible for executing the control loop should not be subjected to the inherent latency caused by a round-trip through the TCP/IP stack. POSIX \cite{posix-spec} compliant operating systems provide Unix domain sockets as an alternative inter-process-communication solution. They operate based on the assumption that they are being used on the same system and can therefor forgo typically TCP specific tasks like checksum calculation or routing. Unix domain sockets are equally fast or more performant depending on implementation.
+  	\item WebSocket \\
+    % https://www.w3.org/TR/2011/WD-html5-20110113/spec.html
+    % https://www.flotcharts.org/
+  	WebSocket is a connection-based full-duplex communication protocol built on top of TCP. It is part of the HTML5 specification \cite{html5-spec} and implemented in most modern browsers. It was decided to implement the remote monitoring interface outlined in the software design goal as a web application, because of already existing experience with JavaScript based plotting libraries like Flot \cite{flot}.
+  \end{itemize}
+  \item First or third party Rust support required \\
+  A library to interact with the message queue from within Rust with minimal overhead is required.
+\end{itemize}
+
+% minimal memory footprint 
+% implemented in compiled languages preferred. java not allowed
+% 1st or 3rd party rust support
+% multiple transport protocol, most importantly tcp and ws
+% in process preferred
+% ipc support preferred
+
+\subsection{Comparison}
+Multiple message queues were considered based on the outlined requirements. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllll}
+Name     & Written in & IPC transport & Broker-less & Persistent \\ \hline
+IronMQ   & Go                      & No            & No         & Yes        \\
+Nanomsg  & C                       & Yes           & Yes        & No         \\
+RabbitMQ & Erlang                  & No            & No         & Yes        \\
+Redis    & C                       & No            & No         & No         \\
+ZeroMQ   & C++                     & Yes           & Yes        & No
+
+\end{tabular}
+\caption{Comparison of Pub/Sub message queues with Rust support. "IPC transport" indicates if Unix Domain Sockets or named pipes are supported. The "Broker-less" column defines if an additional process is required, in order to coordinate connections between publishers and consumers. "Persistence" describes if a non-volatile data cache is used in the standard configuration.}
+\end{table}
+
+% http://250bpm.com/blog:4
+% http://nanomsg.org/documentation-zeromq.html
+% https://www.freelists.org/post/nanomsg/New-fork-was-Re-Moving-forward,10
+% http://garrett.damore.org/2016/01/stepping-down.html
+% https://github.com/nanomsg/nanomsg/issues/619
+% https://nanomsg.github.io/nng/RATIONALE.html#_compatibility
+% https://github.com/erickt/rust-zmq/issues/179
+
+Both Nanomsg and ZeroMQ closely match the previously defined requirements and are overall very similar. Development of both message queues was started by Martin Sustrik, who effectively retired from the ZeroMQ project at the end of 2011 to start Nanomsg, mostly out of dissatisfaction with its implementation language \cite{sustrik-cpp} and the inability to correct accumulated technical debt \cite{sustrik-zeromq}. His departure from ZeroMQ did not impact the project negatively, as it is still maintained to this day. At the end of 2014 Sustrik also left the Nanomsg project without designating a successor. In March of 2015, Garrett D'Amore effectively became the primary maintainer of the project \cite{damore-leader}. He temporarily stepped away from Nanomsg following a dispute over his proposal to introduce a community code of conduct at the start of 2016 \cite{damore-step-down}. In April he returned as the projects "Benevolent Dictator for Life", a role he occupies to this day \cite{damore-bdfl}. He started the nanomsg-next-gen project in January of 2017, which promises ABI compatibility \cite{nng-abi} and a straight forward upgrade path. The first Nanomsg version will remain maintained until nanomsg-next-gen is deemed ready for production use.
+From a technical perspective both are more than capable of fulfilling the software design goal of Pigeon 9001, but Nanomsg was ultimately chosen despite its troubled development because nanomsg.rs, which is the recommended Rust binding, offers better documentation and also does not seem to be affected by the same cross-compilation issues \cite{zmq-cross} that the recommended ZeroMQ binding for Rust, rust-zmq, has been subject to since its inception.
+
+\subsection{Toolchain Modifications}
+It was deemed necessary to extend the toolchain setup script with the ability to automatically fetch the most recent Nanomsg version from GitHub and cross-compile it for ARMv6 as well as ARMv7. Nanomsg uses CMake as its build system, which provides the ability to define a custom compiler in a configuration file named "toolchain file". Custom toolchain files were therefor written to allow for ARMv6 and ARMv7 cross-compilation of Nanomsg.
+
+\begin{figure}[H]
+\begin{minted}{cmake}
+SET(CMAKE_SYSTEM_NAME Linux)
+SET(CMAKE_SYSTEM_PROCESSOR arm)
+
+get_filename_component(CMAKE_C_COMPILER 
+	"../../../.cargo/armv6-toolchain/bin/arm-linux-gnueabihf-gcc" 
+	ABSOLUTE)
+
+SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+\end{minted}
+\caption{CMake toolchain file written to enable ARMv6 builds of Nanomsg. The pre-compiled ARMv6 toolchain that is already present in the previous toolchain version is used to compile Nanomsg during host setup.} 
+\end{figure}
+
+Nanomsg defines a CMake option called \texttt{NN\_STATIC\_LIB}, which can be used to generate a statically linked version of \texttt{libnanomsg.so} instead of the regular dynamically linked variant. It was decided to enable this option at the cost of individual binary size because it eliminated the need for a global Nanomsg installation on every target computer.
+
+% http://nanomsg.org/documentation.html#bindings
+Rust has native support for calling into foreign code that includes a C interface, so it is possible to use Nanomsg from within Rust without any additional external dependencies. Nevertheless, it is recommended to use a wrapper library because all calls to foreign functions are considered unsafe, as Rust's memory management guarantees can no longer be enforced by the compiler. nanomsg.rs provides this functionality for libnanomsg, and is officially endorsed by the Nanomsg project \cite{nanomsg-bindings}, therefor it was deemed necessary to depend on it.
+
+% https://github.com/rust-lang/cargo/blob/607f954e0675c703cb952e77984b1cc5afeb3bbc/src/cargo/ops/cargo_rustc/custom_build.rs#L360
+% https://doc.rust-lang.org/cargo/reference/build-scripts.html#overriding-build-scripts
+Rust crates can provide a build script that is executed upon installation. nanomsg.rs uses this compile-time hook to locate \texttt{libnanomsg.so}, the shared object used for embedding Nanomsg, which is then linked with the executable or library that specifies nanomsg.rs as a dependency. It does this by performing a \texttt{pkg-config} lookup, which locates the global Nanomsg installation, which typically matches the host processor architecture. This behavior complicates cross-compilation, as it is necessary for the shared object to be compiled for the architecture of the target. 
+Initially it was planned to circumvent this issue by dynamically overriding the global Nanomsg installation, which would have required a wrapper script around \texttt{cargo build}. After further investigation this approach was eventually ruled out as it would have introduced additional build complexity and brought along the necessity for insecure file-system permissions. Temporarily modifying \texttt{pkg-config} configuration files was also decided against, because of these same issues. 
+
+A solution was finally found by examining the source code of Cargo, Rust's package manager and build system. The output of build scripts can be overridden by defining a custom search path for libraries in \texttt{.cargo/config} \cite{cargo-source}, a file which was already present as it was previously utilized to declare custom linkers from ARMv6 and ARMv7. It was later discovered, that this functionality is actually documented in Cargo's build script reference \cite{cargo-build-reference}.
+
+\begin{figure}[H]
+\begin{minted}{text}
+[target.arm-unknown-linux-gnueabihf.nanomsg]
+rustc-link-search = ["deps/nanomsg/arm/usr/local/lib"]
+rustc-link-lib = ["nanomsg"]
+root = "deps/nanomsg/arm/usr/local/lib"
+\end{minted}
+\caption{Excerpt of modified \texttt{.cargo/config} file that specifies a custom lookup path for Nanomsg.} 
+\end{figure}
+
+\newpage
+
+\section{Visual Monitoring}
+\author{Sebastian Schaffler}
+
+% http://bearprocess.com/2014/11/25/visualize-IMU-theejs-node/
+The visual monitoring solution that was previously defined as an important part of Pigeon 9001's software design goal was inspired by a blog post \cite{visualize-imu-theejs-node} written by Brent Long. In it, he demonstrates a three-dimensional web-based representation of the orientation measurements obtained by an internal measurement unit that is connected to an Arduino.
+
+% https://www.adafruit.com/product/1604
+% https://www.adafruit.com/product/2020
+Long used an Adafruit 10-DOF IMU \cite{adafruit-10dof} that combines a gyroscope, an accelerometer, a compass, and a barometer onto one circuit board. It is very similar to the FLORA 9-DOF \cite{imu} model used for Pigeon 9001, in that it only provides raw values for each sensor which then have to be combined in software to obtain absolute orientation measurements. Brent Long skipped this step and instead directly displayed the unmodified gyroscope output obtained by querying only one sensor of his IMU. 
+This approach can not be used to display a meaningful three-dimensional representation of the internal measurement unit, as no absolute angles are emitted by the gyroscope. Nevertheless, it was decided to use the same JavaScript rendering library he used, as it would produce correct output if fed with absolute orientation values. Additionally it was deemed necessary to display two-dimensional plots of sensors that can not be meaningfully modeled in 3D.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=13cm]{monitoring}
+\caption{Final version of the monitoring solution. Long distance sensor, pressure sensor, accelerometer and the roll channel of the calculated gyroscope are represented as two-dimensional plots. A three-dimensional model is used to display all axes of the calculated gyroscope.}
+\end{figure}
+
+\newpage
+
+\section{Temporary Demonstration Software}
+\author{Philip Trauner}
+
+A demonstration of the second prototype was scheduled to be shown at the open door day of Höhere Technische Bundes- Lehr- und Versuchsanstalt Wiener Neustadt. Hardware construction was largely finished at this point but the software was not yet functional. It was decided to create a temporary control solution that would make use of the linear slide based user interface located on the first prototype to control each valve of Pigeon 9001 separately. 
+
+Instead of implementing the temporary daemon in Rust, 9000d was translated to Python in an effort to quickly retrofit the ability to drive two valves in the existing control loop. This was done because neither scalability nor performance were a concern. To achieve this it was necessary to move the valve control logic into two separate threads that consume timing queues filled by the control loop. 
+
+% pseudo code
+\begin{figure}[H]
+\begin{minted}{python}
+while True:
+    state = STATE_QUEUE.get()
+
+    power = state.power
+
+    while power:
+        try:
+            state = STATE_QUEUE.get_nowait()
+        except Empty:
+            pass
+
+        power = state.power
+
+        self.left_relay.blink(*calc_pwm(
+            state.cycle_time, state.operating_ratios[0]))
+
+        self.right_relay.blink(*calc_pwm(
+            state.cycle_time, state.operating_ratios[1]))
+
+    self.left_relay.off()
+    self.right_relay.off()
+\end{minted}
+\caption{9001d-botch code excerpt. State encoding/decoding and receive loop are excluded, The \texttt{DigitalOutputDevice.blink} method included in included \cite{gpiozero} is used to perform pulse width modulation on both valves without the need of explicitly starting threads.}
+\end{figure}
+
+Additionally, the state changes emitted by the controller client running on the first prototype had to be modified to contain one "operation ratio" per valve. 
+
+\begin{figure}[H]
 \centering
 
 \includegraphics[width=155mm]{9001d_botch}

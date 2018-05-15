@@ -1,23 +1,32 @@
 \section{Concept}
+\author{Sebastian Schaffler}
 
-Pigeon 9000 taught valuable lessons regarding hardware and software design principles, which could be applied to the second prototype. To get closer to the desired goal of a rocket landing module, another degree of freedom, which has to be controlled by software, was added. In addition to movement along the y-axis, tilting capabilities around the z-axis were envisioned. 
+Pigeon 9000 taught valuable lessons regarding hardware and software design principles, which could be applied to the second prototype. 
 
-A two valve control solution was deemed to be necessary to achieve controlled descend or hover. 
+As this project is intended to be continued by a different student team, it was deemed necessary to expand the hardware and software design scope beyond what is needed to complete the project goal of achieving automatic soft touchdown.
+
+To get closer to the desired goal of a rocket landing module, another degree of freedom, which has to be controlled by software, was added. In addition to movement along the y-axis, tilting capabilities around the z-axis were envisioned. 
+
+A two valve control solution was deemed to be necessary to achieve controlled descend or hovering. 
 
 In order to block all types of undesired movement the linear guide concept utilized in the first prototype had to be modified. The circular cross-section of the previous guide was not suitable because of its rotational symmetry, which would allow for rotation around the y-axis. It was suspected that a two part guide design would be the simplest approach to prohibit this behavior.
 
 The characteristics of the infrared reflection sensors utilized in the first prototype, and their consequential mounting positions  limited the measuring precision to only a few points along the linear guide and had to be heavily revised. It was decided to mount different kinds of sensors on the corpus itself, to measure elevation, tilt, and acceleration. In addition to sensors on the corpus it was also deemed necessary to install a pressure sensor and an integrated pressure tank off-corpus to test the algorithms with limited amounts of propellant.
 
-Air pressure was again chosen as the preferred propellant because it is inexpensive, and easy to handle as well as supply. Additionally, part acquisition knowledge obtained through work on the first prototype could be applied. The relatively low pressure of customary air compressors was also deemed beneficial because component prices and complexity can be kept to a minimum.
+Air pressure was again chosen as the preferred propellant because it is inexpensive, and easy to handle as well as to supply. Additionally, part acquisition knowledge obtained through work on the first prototype could be applied. The relatively low pressure of customary air compressors was also deemed beneficial because component prices and complexity can be kept to a minimum.
+
+This decision ruled out the possibility of mounting an air pressure supply directly on the corpus because of size constraints. Additionally, the low air pressure of \SI{6}{\bar} to \SI{8}{\bar} was deemed insufficient for generating enough thrust to lift such equipment.
+
+Furthermore, mounting the valves on the corpus would not have been possible because valves with the needed characteristics to lift themselves off the ground were unattainable with a budget of 100€ each.
 
 Pigeon 9000 and its relatively small scale was sufficient to design and test preliminary algorithms. Scaling up the second prototype relative to the first one was expected to increase the likeness of the demonstrator to the final goal of a modular landing solution for model rockets. Continuing the use of a table, albeit a larger one, was assumed to hinder portability, which is still a requirement. It was decided to construct an individualized and fold-able test-stand which can be transported easily.
 
-The software architecture chosen for Pigeon 9000 and the resulting programming interface was suitable for the type of controller applications that were developed for the platform. The second prototype requires a different programming interface because it is assumed to be practical to raise the abstraction layer. Instead of supplying low level valve control instructions it was decided to switch over to location parameters.
+The software architecture chosen for Pigeon 9000 and the resulting programming interface was suitable for the type of controller applications that were developed for the platform. The second prototype requires a different programming interface because it is assumed to be practical to raise the abstraction layer. Instead of supplying low level valve control instructions it was decided to switch over to location parameters. It is not necessary to provide the ability to set these parameters during runtime for the completion of the stated prototype goal, but the software architecture should be designed to allow for trivial implementation of such an interface.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 
-\includegraphics[width=100mm]{sketch_xx_second_concept}
+\includegraphics[width=10cm]{sketch_2-00_second_concept}
 
-\caption{Concept}
+\caption{The concept of Pigeon 9001. It is intended to be able to move linearly up and down, as well as rotate around one of its axes. The two pressure tubes are to be fed by separate valves.}
 \end{figure}
