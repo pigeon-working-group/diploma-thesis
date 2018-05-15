@@ -5,16 +5,17 @@ from os import mkdir, listdir
 from hashlib import md5 as md5_
 from json import load, dump
 from mimetypes import guess_type
+from sys import argv
 
 PAPER = "paper.tex"
-QUICK_PAPER = "quick_paper.tex"
+QUICK_PAPER = "%s_paper.tex" % argv[3]
 IMAGES_LOCATION = "images/"
-RESIZED_IMAGES_LOCATION = "images_resized/"
+RESIZED_IMAGES_LOCATION = "images_resized_%s/" % argv[3]
 RESIZED_IMAGES_HASHES = RESIZED_IMAGES_LOCATION + "hashes.json"
 IMAGEMAGICK_INSTALLED = True if find_executable("mogrify") else False
 
-QUALITY = 20
-RESIZE_PERCENTAGE = 30
+QUALITY = int(argv[1])
+RESIZE_PERCENTAGE = int(argv[2])
 
 def md5(fname):
 	""" 
